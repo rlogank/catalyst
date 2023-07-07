@@ -16,7 +16,7 @@
   "author": "Bigcommerce",
   "license": "MIT",
   "bin": {
-    "create-catalyst-app": "./dist/index.js"
+    "create-catalyst-app": "./dist/index.js" 
   },
   "files": [
     "dist"
@@ -25,19 +25,22 @@
     "build": "ncc build ./index.ts --minify --no-cache --no-source-map-register"
   },
   "devDependencies": {
+    "@types/node": "^20.4.0",
+    "@types/validate-npm-package-name": "^4.0.0",
+    "@types/prompts": "^2.4.4",
+    "@types/tar":"^6.1.5",
+    "@types/got": "^9.6.12",
     "@vercel/ncc": "^0.36.1",
-    "chalk": "4.0.0",
     "commander": "^11.0.0",
-    "conf": "^11.0.1",
+    "got": "^13.0.0",
+    "tar": "^6.1.15",
     "prompts": "^2.4.2",
-    "validate-npm-package-name": "^5.0.0"
+    "chalk": "4.0.0",
+    "conf": "^11.0.1",
+    "validate-npm-package-name": "^5.0.0",
+    "update-check": "1.5.4"
   },
   "engines": {
     "node": ">=16.8.0"
-  },
-  "dependencies": {
-    "@types/node": "^18.13.00",
-    "@types/prompts": "^2.4.4",
-    "@types/validate-npm-package-name": "^4.0.0"
   }
 }

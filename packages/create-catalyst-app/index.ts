@@ -3,14 +3,19 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import chalk from 'chalk';
 import { Command } from 'commander';
-import path from 'path';
+import path, { join } from 'path';
+import got from 'got';
+import tar from 'tar';
+import { promisify } from 'util';
 // import Conf from 'conf';
 import prompts from 'prompts';
 import packageJson from './package.json';
-import fs from 'fs';
-import os from 'os';
+import fs, { createWriteStream } from 'fs';
+import { Stream } from 'stream';
+import os, { tmpdir } from 'os';
 import { validateNpmName} from './helpers/validate-package';
 
+const GIT_ACCESS_TOKEN = "";
 let projectPath: string = '';
 
 const handleSigTerm = () => process.exit(0);
@@ -48,7 +53,6 @@ const packageManager = 'pnpm';
 
 async function run(): Promise<void> {
   // const conf = new Conf({ projectName: 'create-catalyst-storefront' })
-
 
   if (typeof projectPath === 'string') {
     projectPath = projectPath.trim();
@@ -88,8 +92,8 @@ async function run(): Promise<void> {
     process.exit(1);
   }
  
-  const resolvedProjectPath = path.resolve(projectPath); // user/home/documents/initial-test-0
-  const projectName = path.basename(resolvedProjectPath); // user/initial-test-0
+  const resolvedProjectPath = path.resolve(projectPath);
+  const projectName = path.basename(resolvedProjectPath);
 
   const { valid, problems } = validateNpmName(projectName);
   if (!valid) {
@@ -103,21 +107,15 @@ async function run(): Promise<void> {
     process.exit(1);
   }
 
-  // TODO: Add catalyst core
-  // if (program.example === true) {
-  //   console.error(
-  //     'Please provide an example name or url, otherwise remove the example option.'
-  //   )
-  //   process.exit(1)
-  // }
-
-  /**
-   * Verify the project dir is empty or doesn't exist
-   */
   const root = path.resolve(resolvedProjectPath);
   const appName = path.basename(root);
   const userDir = os.homedir();
-  const rootAppName = `${userDir}/${appName}` ;
+  const rootAppName = `${userDir}/${appName}`;
+  const createBigCommerceModule = async (root: string) => {
+    const p = path.join(root, '@bigcommerce');
+
+    await makeDir(p);
+  };
 
   await makeDir(rootAppName);
 
@@ -129,8 +127,6 @@ async function run(): Promise<void> {
     process.exit(1);
   }
 
-  // const catalystCorePath = 'https://github.com/bigcommerce/catalyst/tree/main/apps/core/src/app';
-  // TODO: handle core-files for catalyst
   const moveContent = (from: string, to: string) => {
     const transferHandler = (err: unknown) => {
       if (err) {
@@ -142,18 +138,97 @@ async function run(): Promise<void> {
 
     return fs.cp(from, to, {recursive: true}, transferHandler);
   };
-  // const coreTemplates = `${process.cwd()}/core-test`;
-  const coreTemplates = path.join(__dirname, '..', 'core-test');
 
-  console.log('coreTemplates are ...', path.join(__dirname, '..', 'core-test'));
+  const downloadCatalystMainBranch = async (urlPath: string) => {
+    const options = {
+      headers: {
+        Authorization: `Bearer ${GIT_ACCESS_TOKEN}`,
+        Accept: 'application/vnd.github.v3.raw'
+      }
+    };
 
-  await moveContent(coreTemplates, rootAppName);
+    const catalystRepo = new URL(urlPath);
+    const pipeline = promisify(Stream.pipeline);
+    const tempFile = join(tmpdir(), `catalyst.temp-${Date.now()}`);
 
-  console.log(`${chalk.green('catalyst storefront templates created successfully')}`);
+    await pipeline(got.stream(catalystRepo, options), createWriteStream(tempFile))
+
+    // console.log("tempFile stream pipeline =", tempFile);
+
+    return tempFile;
+  };
+  let tempFile;
+
+  try {
+  tempFile = await downloadCatalystMainBranch('https://codeload.github.com/bigcommerce/catalyst/tar.gz/main');
+
+  // TODO: copy docs content + main dependencies [reactant, catalyst-configs, eslint-config-catalyst]
+  console.log(`${chalk.green('catalyst storefront templates fetched successfully')}`);
+  } catch (error) {
+    console.error(`${chalk.red('something went wrong on transfering files: ')}`, error);
+  }
+
+  // await createBigCommerceModule(rootAppName);
+
+  await tar.x({
+    file: tempFile,
+    cwd: rootAppName,
+    filter: (path, entry) => {
+      const docs = 'catalyst-main/apps/docs';
+      // TODO: copy to bigcommerce dir
+      // const reactant = 'catalyst-main/packages/reactant';
+      // const catalystConfigs = 'catalyst-main/packages/catalyst-configs';
+      // const eslintConfig = 'catalyst-main/packages/eslint-config-catalyst';
+
+      if (path.includes(docs)) {
+        return true;
+      }
+
+      // if (path.includes(reactant)) {
+      //   return true;
+      // }
+      // if (path.includes(catalystConfigs)) {
+      //   return true;
+      // }
+      // if (path.includes(eslintConfig)) {
+      //   return true;
+      // }
+
+      return false;
+    },
+    // onentry: (entry) => {
+    //   const packagesList = ['reactant', 'catalyst-configs', 'eslint-config-catalyst'];
+
+    //   if (entry.path.includes('reactant')) {
+    //     console.log(`${chalk.yellow('entry full path ==')}`, path.join(rootAppName, entry.path));
+
+    //     fs.cp(entry.path, `${rootAppName}/@bigcommerce`, {recursive: true}, (err) => {
+    //       if (err) {
+    //         console.log(`${chalk.red('copying process went wrong')}`, err)
+    //       }
+    //     });
+    //   }
+
+    //   if (entry.path.includes('docs')) {
+    //     fs.cp(entry.path, `${rootAppName}`, {recursive: true}, (err) => {
+    //       if(err) {
+    //         console.log(err);
+    //       }
+    //     })
+    //   }
+    // },
+    strip: 3
+  })
+
+  console.log();
+  console.log(`${chalk.green('catalyst storefront templates copied successfully')}`);
+
+  await fs.unlink(tempFile!, (err) => {
+    if (err) {
+      console.log('unkink failed for reason ', err);
+    }
+  });
 }
-// NOTE: run fn ended
-
-
 
 run()
   .catch(async (reason) => {
