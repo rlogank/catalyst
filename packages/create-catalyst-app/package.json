@@ -1,0 +1,43 @@
+{
+  "name": "create-catalyst-app",
+  "version": "0.0.1",
+  "keywords": [
+    "react",
+    "next.js",
+    "bigcommerce",
+    "catalyst"
+  ],
+  "description": "Create Bigcommerce headless storefront on ease",
+  "repository": {
+    "type": "git",
+    "url": "",
+    "directory": "packages/create-catalyst-app"
+  },
+  "author": "Bigcommerce",
+  "license": "MIT",
+  "bin": {
+    "create-catalyst-app": "./dist/index.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "ncc build ./index.ts --minify --no-cache --no-source-map-register"
+  },
+  "devDependencies": {
+    "@vercel/ncc": "^0.36.1",
+    "chalk": "4.0.0",
+    "commander": "^11.0.0",
+    "conf": "^11.0.1",
+    "prompts": "^2.4.2",
+    "validate-npm-package-name": "^5.0.0"
+  },
+  "engines": {
+    "node": ">=16.8.0"
+  },
+  "dependencies": {
+    "@types/node": "^18.13.00",
+    "@types/prompts": "^2.4.4",
+    "@types/validate-npm-package-name": "^4.0.0"
+  }
+}
