@@ -15,7 +15,6 @@ import { Stream } from 'stream';
 import os, { tmpdir } from 'os';
 import { validateNpmName} from './helpers/validate-package';
 
-const GIT_ACCESS_TOKEN = "";
 let projectPath: string = '';
 
 const handleSigTerm = () => process.exit(0);
@@ -43,16 +42,21 @@ const program = new Command("create-catalyst-app");
 
 program
   .version(packageJson.version)
-  .argument('<project-directory>')
-  .usage(`${chalk.green('project-directory')}`)
-  .action((path: string) => {
-    projectPath = path;
-  });
+  .option('--token <token>', 'GitHub Access Token')
+  .parse(process.argv)
 
+const options = program.opts();
+const GIT_ACCESS_TOKEN = options.token ?? '';
 const packageManager = 'pnpm';
 
+
 async function run(): Promise<void> {
-  // const conf = new Conf({ projectName: 'create-catalyst-storefront' })
+  if (!GIT_ACCESS_TOKEN) {
+    console.log(chalk.red(`Your GitHub token required to continue work with CLI...`));
+    console.log(`Run ${chalk.cyan(`${program.name()} --help`)} to see all options.`);
+  
+    process.exit(1);
+  }
 
   if (typeof projectPath === 'string') {
     projectPath = projectPath.trim();
@@ -122,7 +126,8 @@ async function run(): Promise<void> {
   const folderExists = fs.existsSync(rootAppName);
 
   if (folderExists) {
-    console.log(`${chalk.green('project directory created successfully')}`)
+    console.log(`${chalk.green('project directory created successfully')}`);
+    console.log();
   } else {
     process.exit(1);
   }
