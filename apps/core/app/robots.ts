@@ -1,6 +1,6 @@
 import { MetadataRoute } from 'next'
 // import and parse static-routes.json
-import * as staticRoutes from './static-routes.json' 
+import * as staticRoutes from '../static-routes.json' 
 
 const nonIndexableRouteTypes = ['cart', 'account']
 
