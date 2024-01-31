@@ -144,9 +144,9 @@ export const PRODUCT_OPTIONS_FRAGMENT = /* GraphQL */ `
 `;
 
 export const GET_PRODUCT_QUERY = /* GraphQL */ `
-  query getProduct($productId: Int!, $optionValueIds: [OptionValueId!]) {
+  query getProduct($productId: Int!, $sku: String, $optionValueIds: [OptionValueId!]) {
     site {
-      product(entityId: $productId, optionValueIds: $optionValueIds) {
+      product(entityId: $productId, sku: $sku, optionValueIds: $optionValueIds) {
         ...BasicProduct
         sku
         warranty
@@ -219,7 +219,7 @@ export const GET_PRODUCT_QUERY = /* GraphQL */ `
   }
 `;
 
-const getInternalProduct = async (productId: number, optionValueIds?: OptionValueId[]) => {
+const getInternalProduct = async (productId: number, sku: string, optionValueIds?: OptionValueId[]) => {
   const query = graphql(GET_PRODUCT_QUERY);
   const customerId = await getSessionCustomerId();
 
@@ -285,8 +285,8 @@ const reshapeProduct = (product: Product) => {
   };
 };
 
-export const getProduct = cache(async (productId: number, optionValueIds?: OptionValueId[]) => {
-  const product = await getInternalProduct(productId, optionValueIds);
+export const getProduct = cache(async (productId: number, sku: string, optionValueIds?: OptionValueId[]) => {
+  const product = await getInternalProduct(productId, sku, optionValueIds);
 
   if (!product) {
     return null;

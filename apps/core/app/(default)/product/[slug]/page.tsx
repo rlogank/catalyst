@@ -5,6 +5,7 @@ import { Heart } from 'lucide-react';
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
+import { currencyFormatterForCurrency } from '~/lib/currencyFormatter';
 
 import { getProduct } from '~/client/queries/getProduct';
 import { VariantSelector } from '~/components/VariantSelector';
@@ -20,10 +21,7 @@ import { ReviewSummary } from './_components/ReviewSummary';
 
 type Product = Awaited<ReturnType<typeof getProduct>>;
 
-const currencyFormatter = new Intl.NumberFormat('en-US', {
-  style: 'currency',
-  currency: 'USD',
-});
+const currencyFormatter = currencyFormatterForCurrency('USD')
 
 const ProductDetails = ({ product }: { product: NonNullable<Product> }) => {
   const showPriceRange =
