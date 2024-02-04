@@ -1,5 +1,5 @@
-import { Button } from '@bigcommerce/reactant/Button';
-import { Popover, PopoverContent, PopoverTrigger } from '@bigcommerce/reactant/Popover';
+import { Button } from '@bigcommerce/catalyst-components/Button';
+import { Popover, PopoverContent, PopoverTrigger } from '@bigcommerce/catalyst-components/Popover';
 import type { Meta, StoryObj } from '@storybook/react';
 
 const meta: Meta<typeof Popover> = {

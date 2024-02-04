@@ -1,5 +1,5 @@
-import { Counter } from '@bigcommerce/reactant/Counter';
-import { Label } from '@bigcommerce/reactant/Label';
+import { Counter } from '@bigcommerce/catalyst-components/Counter';
+import { Label } from '@bigcommerce/catalyst-components/Label';
 
 import { useProductFieldController } from '../useProductForm';
 

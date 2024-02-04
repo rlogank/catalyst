@@ -2,7 +2,7 @@ import {
   BreadcrumbDivider,
   BreadcrumbItem,
   Breadcrumbs as ReactantBreadcrumbs,
-} from '@bigcommerce/reactant/Breadcrumbs';
+} from '@bigcommerce/catalyst-components/Breadcrumbs';
 import { ChevronRight } from 'lucide-react';
 import { Fragment } from 'react';
 

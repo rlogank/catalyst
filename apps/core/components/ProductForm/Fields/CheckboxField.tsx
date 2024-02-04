@@ -1,5 +1,5 @@
-import { Checkbox } from '@bigcommerce/reactant/Checkbox';
-import { Label } from '@bigcommerce/reactant/Label';
+import { Checkbox } from '@bigcommerce/catalyst-components/Checkbox';
+import { Label } from '@bigcommerce/catalyst-components/Label';
 
 import { getProduct } from '~/client/queries/getProduct';
 import { ExistingResultType, Unpacked } from '~/client/util';

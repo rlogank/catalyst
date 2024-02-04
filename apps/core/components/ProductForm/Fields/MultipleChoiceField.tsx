@@ -1,9 +1,9 @@
-import { Label } from '@bigcommerce/reactant/Label';
-import { PickList, PickListItem } from '@bigcommerce/reactant/PickList';
-import { RadioGroup, RadioItem } from '@bigcommerce/reactant/RadioGroup';
-import { RectangleList, RectangleListItem } from '@bigcommerce/reactant/RectangleList';
-import { Select, SelectContent, SelectItem } from '@bigcommerce/reactant/Select';
-import { Swatch, SwatchItem } from '@bigcommerce/reactant/Swatch';
+import { Label } from '@bigcommerce/catalyst-components/Label';
+import { PickList, PickListItem } from '@bigcommerce/catalyst-components/PickList';
+import { RadioGroup, RadioItem } from '@bigcommerce/catalyst-components/RadioGroup';
+import { RectangleList, RectangleListItem } from '@bigcommerce/catalyst-components/RectangleList';
+import { Select, SelectContent, SelectItem } from '@bigcommerce/catalyst-components/Select';
+import { Swatch, SwatchItem } from '@bigcommerce/catalyst-components/Swatch';
 import Image from 'next/image';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 

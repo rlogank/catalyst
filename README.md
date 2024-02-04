@@ -8,7 +8,7 @@
 The Catalyst monorepo contains the following:
 
 * The core **Catalyst** Next.js storefront, in [apps/core](apps/core).
-* The **Reactant** storefront component library, in [packages/reactant](packages/reactant).
+* The **Reactant** storefront component library, in [packages/catalyst-components](packages/catalyst-components).
 * The BigCommerce [GraphQL Storefront API (BigCommerce Dev Center)](https://developer.bigcommerce.com/docs/graphql-storefront) client, in [packages/client](packages/client).
 
 ## Requirements
@@ -83,7 +83,7 @@ The `dev` script runs all packages and apps in watch mode. The following table l
 | Process | URL with port |
 |:--------|:--------------|
 | Core Catalyst storefront | http://localhost:3000 |
-| Reactant Storybook | http://localhost:6006 |
+| Catalyst ComponentsStorybook | http://localhost:6006 |
 
 Happy developing! Let us know how things are going in the dedicated Slack channel.
 

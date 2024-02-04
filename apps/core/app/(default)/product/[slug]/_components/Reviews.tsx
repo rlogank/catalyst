@@ -1,4 +1,4 @@
-import { Rating } from '@bigcommerce/reactant/Rating';
+import { Rating } from '@bigcommerce/catalyst-components/Rating';
 
 import { getProductReviews } from '~/client/queries/getProductReviews';
 

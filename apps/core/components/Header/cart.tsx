@@ -1,5 +1,5 @@
-import { Badge } from '@bigcommerce/reactant/Badge';
-import { NavigationMenuLink } from '@bigcommerce/reactant/NavigationMenu';
+import { Badge } from '@bigcommerce/catalyst-components/Badge';
+import { NavigationMenuLink } from '@bigcommerce/catalyst-components/NavigationMenu';
 import { ShoppingCart } from 'lucide-react';
 import { cookies } from 'next/headers';
 import { ReactNode } from 'react';

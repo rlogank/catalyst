@@ -1,5 +1,5 @@
-import { Checkbox } from '@bigcommerce/reactant/Checkbox';
-import { Label } from '@bigcommerce/reactant/Label';
+import { Checkbox } from '@bigcommerce/catalyst-components/Checkbox';
+import { Label } from '@bigcommerce/catalyst-components/Label';
 import type { Meta, StoryObj } from '@storybook/react';
 import { X } from 'lucide-react';
 

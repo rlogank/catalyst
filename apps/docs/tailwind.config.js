@@ -1,9 +1,9 @@
-const reactantPreset = require('@bigcommerce/reactant/tailwind-config');
+const catalyst-componentsPreset = require('@bigcommerce/catalyst-components/tailwind-config');
 
 /** @type {import('tailwindcss').Config} */
 const config = {
-  presets: [reactantPreset],
-  content: ['./stories/**/*.{ts,tsx}', './node_modules/@bigcommerce/reactant/src/**/*.{ts,tsx}'],
+  presets: [catalyst-componentsPreset],
+  content: ['./stories/**/*.{ts,tsx}', './node_modules/@bigcommerce/catalyst-components/src/**/*.{ts,tsx}'],
   plugins: [],
 };
 

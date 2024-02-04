@@ -1,5 +1,5 @@
-import { Label } from '@bigcommerce/reactant/Label';
-import { PickList, PickListIndicator, PickListItem } from '@bigcommerce/reactant/PickList';
+import { Label } from '@bigcommerce/catalyst-components/Label';
+import { PickList, PickListIndicator, PickListItem } from '@bigcommerce/catalyst-components/PickList';
 import type { Meta, StoryObj } from '@storybook/react';
 import { Paintbrush } from 'lucide-react';
 import { Fragment } from 'react';

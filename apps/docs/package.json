@@ -1,6 +1,6 @@
 {
   "name": "@bigcommerce/docs",
-  "description": "Reactant docs",
+  "description": "Catalyst Componentsdocs",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -9,7 +9,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@bigcommerce/reactant": "workspace:^",
+    "@bigcommerce/catalyst-components": "workspace:^",
     "clsx": "^2.0.0",
     "lucide-react": "^0.294.0",
     "react": "^18.2.0",

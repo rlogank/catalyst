@@ -8,7 +8,7 @@ import {
   GalleryThumbnailItem,
   GalleryThumbnailList,
   Gallery as ReactantGallery,
-} from '@bigcommerce/reactant/Gallery';
+} from '@bigcommerce/catalyst-components/Gallery';
 import Image from 'next/image';
 
 import { getProduct } from '~/client/queries/getProduct';

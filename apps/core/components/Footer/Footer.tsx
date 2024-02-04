@@ -1,4 +1,8 @@
-import { FooterNav, FooterSection, Footer as ReactantFooter } from '@bigcommerce/reactant/Footer';
+import {
+  FooterNav,
+  FooterSection,
+  Footer as ReactantFooter,
+} from '@bigcommerce/catalyst-components/Footer';
 import React from 'react';
 
 import { AvailableWebPages, getWebPages } from '~/client/queries/getWebPages';

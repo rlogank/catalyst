@@ -1,4 +1,4 @@
-import { Message } from '@bigcommerce/reactant/Message';
+import { Message } from '@bigcommerce/catalyst-components/Message';
 
 import { SearchForm } from 'components/SearchForm';
 import { getFeaturedProducts } from '~/client/queries/getFeaturedProducts';

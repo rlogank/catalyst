@@ -1,4 +1,4 @@
-import { Badge } from '@bigcommerce/reactant/Badge';
+import { Badge } from '@bigcommerce/catalyst-components/Badge';
 import type { Meta, StoryObj } from '@storybook/react';
 import { ShoppingCart } from 'lucide-react';
 

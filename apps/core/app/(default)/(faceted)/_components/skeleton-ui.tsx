@@ -1,4 +1,4 @@
-import { Skeleton } from '@bigcommerce/reactant/Skeleton';
+import { Skeleton } from '@bigcommerce/catalyst-components/Skeleton';
 
 export const SkeletonIU = () => (
   <div>

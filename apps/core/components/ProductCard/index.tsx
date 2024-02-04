@@ -5,8 +5,8 @@ import {
   ProductCardInfoPrice,
   ProductCardInfoProductName,
   ProductCard as ReactantProductCard,
-} from '@bigcommerce/reactant/ProductCard';
-import { Rating } from '@bigcommerce/reactant/Rating';
+} from '@bigcommerce/catalyst-components/ProductCard';
+import { Rating } from '@bigcommerce/catalyst-components/Rating';
 import Image from 'next/image';
 import { useId } from 'react';
 

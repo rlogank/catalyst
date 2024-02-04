@@ -1,4 +1,4 @@
-import { Rating } from '@bigcommerce/reactant/Rating';
+import { Rating } from '@bigcommerce/catalyst-components/Rating';
 import type { Meta, StoryObj } from '@storybook/react';
 
 const meta: Meta<typeof Rating> = {

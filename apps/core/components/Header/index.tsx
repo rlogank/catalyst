@@ -1,4 +1,4 @@
-import { Button } from '@bigcommerce/reactant/Button';
+import { Button } from '@bigcommerce/catalyst-components/Button';
 import {
   NavigationMenu,
   NavigationMenuCollapsed,
@@ -8,7 +8,7 @@ import {
   NavigationMenuList,
   NavigationMenuToggle,
   NavigationMenuTrigger,
-} from '@bigcommerce/reactant/NavigationMenu';
+} from '@bigcommerce/catalyst-components/NavigationMenu';
 import { ChevronDown, LogOut, ShoppingCart, User } from 'lucide-react';
 import { ReactNode, Suspense } from 'react';
 

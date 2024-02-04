@@ -1,5 +1,5 @@
-import { Label } from '@bigcommerce/reactant/Label';
-import { TextArea } from '@bigcommerce/reactant/TextArea';
+import { Label } from '@bigcommerce/catalyst-components/Label';
+import { TextArea } from '@bigcommerce/catalyst-components/TextArea';
 
 import { getProduct } from '~/client/queries/getProduct';
 import { ExistingResultType, Unpacked } from '~/client/util';

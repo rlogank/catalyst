@@ -1,8 +1,8 @@
 'use client';
 
-import { Button } from '@bigcommerce/reactant/Button';
-import { Field, FieldControl, Form, FormSubmit } from '@bigcommerce/reactant/Form';
-import { Input } from '@bigcommerce/reactant/Input';
+import { Button } from '@bigcommerce/catalyst-components/Button';
+import { Field, FieldControl, Form, FormSubmit } from '@bigcommerce/catalyst-components/Form';
+import { Input } from '@bigcommerce/catalyst-components/Input';
 import { Loader2 as Spinner } from 'lucide-react';
 import { useFormStatus } from 'react-dom';
 

@@ -1,4 +1,4 @@
-import { Message } from '@bigcommerce/reactant/Message';
+import { Message } from '@bigcommerce/catalyst-components/Message';
 import type { Meta, StoryObj } from '@storybook/react';
 
 const meta: Meta<typeof Message> = {

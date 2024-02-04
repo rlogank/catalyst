@@ -6,7 +6,7 @@ import {
   BlogPostImage,
   BlogPostTitle,
   BlogPostCard as ReactantBlogPostCard,
-} from '@bigcommerce/reactant/BlogPostCard';
+} from '@bigcommerce/catalyst-components/BlogPostCard';
 import Image from 'next/image';
 
 import { getBlogPosts } from '~/client/queries/getBlogPosts';

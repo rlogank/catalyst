@@ -1,4 +1,8 @@
-import { FooterNav, FooterNavGroupList, FooterNavLink } from '@bigcommerce/reactant/Footer';
+import {
+  FooterNav,
+  FooterNavGroupList,
+  FooterNavLink,
+} from '@bigcommerce/catalyst-components/Footer';
 import {
   SiFacebook,
   SiInstagram,
