@@ -1,19 +1,40 @@
+import { removeEdgesAndNodes } from '@bigcommerce/catalyst-client';
 import { Message } from '@bigcommerce/components/Message';
 import { ShoppingCart } from 'lucide-react';
 
-import { getFeaturedProducts } from '~/client/queries/get-featured-products';
-import { Footer } from '~/components/footer/footer';
-import { Header } from '~/components/header';
+import { Footer, FooterFragment } from '~/components/footer/footer';
+import { Header, HeaderFragment } from '~/components/header';
 import { CartLink } from '~/components/header/cart';
-import { ProductCard } from '~/components/product-card';
+import { ProductCard, ProductCardFragment } from '~/components/product-card';
 import { SearchForm } from '~/components/search-form';
+import { execute, graphql } from '~/tada/graphql';
 
 export const metadata = {
   title: 'Not Found',
 };
 
+const NotFoundQuery = graphql(
+  `
+    query NotFoundQuery {
+      site {
+        ...HeaderFragment
+        ...FooterFragment
+        featuredProducts(first: 12) {
+          edges {
+            node {
+              ...ProductCardFragment
+            }
+          }
+        }
+      }
+    }
+  `,
+  [HeaderFragment, FooterFragment, ProductCardFragment],
+);
+
 export default async function NotFound() {
-  const featuredProducts = await getFeaturedProducts({ imageHeight: 500, imageWidth: 500 });
+  const fragmentData = await execute(NotFoundQuery, { imageHeight: 500, imageWidth: 500 });
+  const featuredProductsFragments = removeEdgesAndNodes(fragmentData.site.featuredProducts);
 
   return (
     <>
@@ -23,6 +44,7 @@ export default async function NotFound() {
             <ShoppingCart aria-label="cart" />
           </CartLink>
         }
+        data={fragmentData.site}
       />
       <main className="mx-auto mb-10 max-w-[835px] space-y-8 px-6 sm:px-10 lg:px-0">
         <Message className="flex-col gap-8 px-0 py-16">
@@ -35,13 +57,13 @@ export default async function NotFound() {
         <section>
           <h3 className="mb-8 text-h3">Featured Products</h3>
           <div className="grid grid-cols-2 gap-x-8 gap-y-8 md:grid-cols-4">
-            {featuredProducts.map((product) => (
-              <ProductCard key={product.entityId} product={product} />
+            {featuredProductsFragments.map((productFragment, i) => (
+              <ProductCard data={productFragment} key={i} />
             ))}
           </div>
         </section>
       </main>
-      <Footer />
+      <Footer data={fragmentData.site} />
     </>
   );
 }

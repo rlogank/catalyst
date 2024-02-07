@@ -1,13 +1,32 @@
+import { FragmentOf, readFragment } from 'gql.tada';
 import Image from 'next/image';
 
-import { getStoreSettings } from '~/client/queries/get-store-settings';
+import { graphql } from '~/tada/graphql';
 
-export const StoreLogo = async () => {
-  const settings = await getStoreSettings();
-
-  if (!settings) {
-    return null;
+export const StoreLogoFragment = graphql(`
+  fragment StoreLogoFragment on Settings {
+    storeName
+    logoV2 {
+      __typename
+      ... on StoreTextLogo {
+        text
+      }
+      ... on StoreImageLogo {
+        image {
+          url(width: 155)
+          altText
+        }
+      }
+    }
   }
+`);
+
+interface Props {
+  data: FragmentOf<typeof StoreLogoFragment>;
+}
+
+export const StoreLogo = ({ data }: Props) => {
+  const settings = readFragment(StoreLogoFragment, data);
 
   const { logoV2: logo, storeName } = settings;
 

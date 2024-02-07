@@ -1,22 +1,56 @@
-import { Product } from '../product-card';
+import { FragmentOf, graphql, readFragment } from '~/tada/graphql';
 
-export const Pricing = ({ prices }: { prices: Product['prices'] }) => {
+export const PricingFragment = graphql(`
+  fragment PricingFragment on Product {
+    prices {
+      basePrice {
+        value
+      }
+      price {
+        currencyCode
+        value
+      }
+      retailPrice {
+        value
+      }
+      salePrice {
+        value
+      }
+      priceRange {
+        min {
+          value
+          currencyCode
+        }
+        max {
+          value
+          currencyCode
+        }
+      }
+    }
+  }
+`);
+
+interface Props {
+  data: FragmentOf<typeof PricingFragment>;
+}
+
+export const Pricing = ({ data }: Props) => {
+  const { prices } = readFragment(PricingFragment, data);
+
   if (!prices) {
     return null;
   }
 
   const currencyFormatter = new Intl.NumberFormat('en-US', {
     style: 'currency',
-    currency: prices.price?.currencyCode,
+    currency: prices.price.currencyCode,
   });
 
-  const showPriceRange = prices.priceRange?.min?.value !== prices.priceRange?.max?.value;
+  const showPriceRange = prices.priceRange.min.value !== prices.priceRange.max.value;
 
   return (
     <p className="w-36 shrink-0">
-      {showPriceRange &&
-      prices.priceRange?.min?.value !== undefined &&
-      prices.priceRange.max?.value !== undefined ? (
+      {showPriceRange ? (
         <>
           {currencyFormatter.format(prices.priceRange.min.value)} -{' '}
           {currencyFormatter.format(prices.priceRange.max.value)}
@@ -42,7 +76,7 @@ export const Pricing = ({ prices }: { prices: Product['prices'] }) => {
               <>Now: {currencyFormatter.format(prices.salePrice.value)}</>
             </>
           ) : (
-            prices.price?.value && <>{currencyFormatter.format(prices.price.value)}</>
+            prices.price.value && <>{currencyFormatter.format(prices.price.value)}</>
           )}
         </>
       )}

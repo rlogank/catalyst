@@ -8,8 +8,17 @@ import {
   SiYoutube,
 } from '@icons-pack/react-simple-icons';
 
-import { getStoreSettings } from '~/client/queries/get-store-settings';
 import { Link } from '~/components/link';
+import { FragmentOf, graphql, readFragment } from '~/tada/graphql';
+
+export const SocialIconsFragment = graphql(`
+  fragment SocialIconsFragment on Settings {
+    socialMediaLinks {
+      name
+      url
+    }
+  }
+`);
 
 const socialIconNames = [
   'Facebook',
@@ -47,12 +56,14 @@ const SocialIcon = ({ name }: { name: string }) => {
   }
 };
 
-export const SocialIcons = async () => {
-  const settings = await getStoreSettings();
+interface Props {
+  data: FragmentOf<typeof SocialIconsFragment>;
+}
 
-  const socialMediaLinks = settings?.socialMediaLinks;
+export const SocialIcons = ({ data }: Props) => {
+  const { socialMediaLinks } = readFragment(SocialIconsFragment, data);
 
-  if (!socialMediaLinks || socialMediaLinks.length === 0) {
+  if (socialMediaLinks.length === 0) {
     return null;
   }
 

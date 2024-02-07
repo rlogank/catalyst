@@ -3,73 +3,79 @@ import {
   FooterNav,
   FooterSection,
 } from '@bigcommerce/components/Footer';
+import { FragmentOf, graphql, readFragment } from 'gql.tada';
 import React from 'react';
 
-import { AvailableWebPages, getWebPages } from '~/client/queries/get-web-pages';
+import { StoreLogo, StoreLogoFragment } from '../store-logo';
 
-import { StoreLogo } from '../store-logo';
-
-import { ContactInformation } from './contact-information';
-import { Copyright } from './copyright';
-import { BaseFooterMenu, BrandFooterMenu, CategoryFooterMenu } from './footer-menus';
+import { ContactInformation, ContactInformationFragment } from './contact-information';
+import { Copyright, CopyrightFragment } from './copyright';
+import {
+  BrandFooterMenu,
+  BrandFooterMenuFragment,
+  CategoryFooterMenu,
+  CategoryFooterMenuFragment,
+} from './footer-menus';
+import { WebPageFooterMenu, WebpageFooterMenuFragment } from './footer-menus/webpage-footer-menu';
 import { PaymentMethods } from './payment-methods';
-import { SocialIcons } from './social-icons';
+import { SocialIcons, SocialIconsFragment } from './social-icons';
 
-const filterActivePages = (availableStorePages: AvailableWebPages) =>
-  availableStorePages.reduce<Array<{ name: string; path: string }>>((visiblePages, currentPage) => {
-    if (currentPage.isVisibleInNavigation) {
-      const { name, __typename } = currentPage;
-
-      visiblePages.push({
-        name,
-        path: __typename === 'ExternalLinkPage' ? currentPage.link : currentPage.path,
-      });
-
-      return visiblePages;
+export const FooterFragment = graphql(
+  `
+    fragment FooterFragment on Site {
+      ...BrandFooterMenuFragment
+      ...CategoryFooterMenuFragment
+      settings {
+        ...ContactInformationFragment
+        ...CopyrightFragment
+        ...SocialIconsFragment
+        ...StoreLogoFragment
+      }
+      content {
+        ...WebpageFooterMenuFragment
+      }
     }
+  `,
+  [
+    BrandFooterMenuFragment,
+    CategoryFooterMenuFragment,
+    ContactInformationFragment,
+    CopyrightFragment,
+    SocialIconsFragment,
+    StoreLogoFragment,
+    WebpageFooterMenuFragment,
+  ],
+);
 
-    return visiblePages;
-  }, []);
+interface Props {
+  data: FragmentOf<typeof FooterFragment>;
+}
 
-const activeFooterWebPages = await (async (columnName: string) => {
-  const storeWebPages = await getWebPages();
+export const Footer = ({ data }: Props) => {
+  const fragmentData = readFragment(FooterFragment, data);
+  const settings = fragmentData.settings;
 
-  return {
-    title: columnName,
-    items: filterActivePages(storeWebPages),
-  };
-})('Navigate');
-
-const WebPageFooterMenu = () => {
-  const { title, items } = activeFooterWebPages;
-
-  if (items.length > 0) {
-    return <BaseFooterMenu items={items} title={title} />;
-  }
-
-  return null;
-};
-
-export const Footer = () => {
   return (
     <ComponentsFooter>
       <FooterSection>
         <FooterNav>
-          <CategoryFooterMenu />
-          <BrandFooterMenu />
-          <WebPageFooterMenu />
+          <CategoryFooterMenu data={fragmentData} />
+          <BrandFooterMenu data={fragmentData} />
+          <WebPageFooterMenu data={fragmentData.content} />
         </FooterNav>
         <div className="flex shrink-0 grow flex-col gap-4 md:order-first">
-          <h3 className="mb-4">
-            <StoreLogo />
-          </h3>
-          <ContactInformation />
-          <SocialIcons />
+          {settings && (
+            <h3 className="mb-4">
+              <StoreLogo data={settings} />
+            </h3>
+          )}
+          {settings && <ContactInformation data={settings} />}
+          {settings && <SocialIcons data={settings} />}
         </div>
       </FooterSection>
       <FooterSection className="justify-between gap-10 sm:flex-row sm:gap-8 sm:py-6">
         <PaymentMethods />
-        <Copyright />
+        {settings && <Copyright data={settings} />}
       </FooterSection>
     </ComponentsFooter>
   );

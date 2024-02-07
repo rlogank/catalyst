@@ -3,6 +3,11 @@
   "documents": [
     "apps/core/client/queries/**/*.ts",
     "apps/core/client/mutations/**/*.ts",
-    "apps/core/client/fragments/**/*.ts"
+    "apps/core/client/fragments/**/*.ts",
+    "apps/core/app/**/*.ts",
+    "apps/core/app/**/*.tsx",
+    "apps/core/tada/**/*.ts",
+    "apps/core/components/**/*.ts",
+    "apps/core/components/**/*.tsx"
   ]
 }

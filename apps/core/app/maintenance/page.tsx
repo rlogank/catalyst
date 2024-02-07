@@ -1,11 +1,28 @@
 import { Phone } from 'lucide-react';
 import { ReactNode } from 'react';
 
-import { getStoreSettings } from '~/client/queries/get-store-settings';
-import { StoreLogo } from '~/components/store-logo';
+import { StoreLogo, StoreLogoFragment } from '~/components/store-logo';
+import { execute, graphql } from '~/tada/graphql';
 
 const Container = ({ children }: { children: ReactNode }) => (
   <main className="mx-auto mt-[64px] px-6 md:px-10 lg:mt-[128px]">{children}</main>
+);
+
+const MaintenanceQuery = graphql(
+  `
+    query MaintenanceQuery {
+      site {
+        settings {
+          ...StoreLogoFragment
+          contact {
+            phone
+          }
+          statusMessage
+        }
+      }
+    }
+  `,
+  [StoreLogoFragment],
 );
 
 export const metadata = {
@@ -13,7 +30,8 @@ export const metadata = {
 };
 
 export default async function MaintenancePage() {
-  const storeSettings = await getStoreSettings();
+  const { site } = await execute(MaintenanceQuery);
+  const storeSettings = site.settings;
 
   if (!storeSettings) {
     return (
@@ -27,7 +45,7 @@ export default async function MaintenancePage() {
 
   return (
     <Container>
-      <StoreLogo />
+      <StoreLogo data={storeSettings} />
 
       <h1 className="my-8 text-h2">We are down for maintenance</h1>
 

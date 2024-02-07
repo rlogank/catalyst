@@ -16,9 +16,10 @@ import { getSessionCustomerId } from '~/auth';
 import { getCategoryTree } from '~/client/queries/get-category-tree';
 import { Link } from '~/components/link';
 import { cn } from '~/lib/utils';
+import { FragmentOf, graphql, readFragment } from '~/tada/graphql';
 
 import { QuickSearch } from '../quick-search';
-import { StoreLogo } from '../store-logo';
+import { StoreLogo, StoreLogoFragment } from '../store-logo';
 
 import { logout } from './_actions/logout';
 import { CartLink } from './cart';
@@ -109,16 +110,33 @@ const HeaderNav = async ({
   );
 };
 
-export const Header = async ({ cart }: { cart: ReactNode }) => {
+export const HeaderFragment = graphql(
+  `
+    fragment HeaderFragment on Site {
+      settings {
+        ...StoreLogoFragment
+      }
+    }
+  `,
+  [StoreLogoFragment],
+);
+
+interface Props {
+  cart: ReactNode;
+  data: FragmentOf<typeof HeaderFragment>;
+}
+
+export const Header = async ({ data, cart }: Props) => {
   const customerId = await getSessionCustomerId();
+
+  const fragmentData = readFragment(HeaderFragment, data);
+  const { settings } = fragmentData;
 
   return (
     <header>
       <NavigationMenu>
         <NavigationMenuLink asChild className="shrink-0 px-0">
-          <Link href="/">
-            <StoreLogo />
-          </Link>
+          <Link href="/">{settings && <StoreLogo data={settings} />}</Link>
         </NavigationMenuLink>
         <HeaderNav className="hidden lg:flex" />
         <div className="flex">
@@ -126,7 +144,7 @@ export const Header = async ({ cart }: { cart: ReactNode }) => {
             <NavigationMenuItem>
               <QuickSearch>
                 <Link className="flex" href="/">
-                  <StoreLogo />
+                  {settings && <StoreLogo data={settings} />}
                 </Link>
               </QuickSearch>
             </NavigationMenuItem>

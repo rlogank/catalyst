@@ -1,10 +1,23 @@
+import { FragmentOf, readFragment } from 'gql.tada';
 import { Fragment } from 'react';
 
-import { getStoreSettings } from '~/client/queries/get-store-settings';
+import { graphql } from '~/tada/graphql';
 
-export const ContactInformation = async () => {
-  const settings = await getStoreSettings();
-  const contact = settings?.contact;
+export const ContactInformationFragment = graphql(`
+  fragment ContactInformationFragment on Settings {
+    contact {
+      address
+      phone
+    }
+  }
+`);
+
+interface Props {
+  data: FragmentOf<typeof ContactInformationFragment>;
+}
+
+export const ContactInformation = ({ data }: Props) => {
+  const { contact } = readFragment(ContactInformationFragment, data);
 
   if (!contact) {
     return null;
