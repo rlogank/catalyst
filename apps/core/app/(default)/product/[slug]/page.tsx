@@ -4,11 +4,12 @@ import { Suspense } from 'react';
 
 import { getProduct } from '~/client/queries/get-product';
 import { ProductForm } from '~/components/product-form';
+import { execute, graphql } from '~/tada/graphql';
 
 import { BreadCrumbs } from './_components/breadcrumbs';
 import { Gallery } from './_components/gallery';
 import { ProductSchema } from './_components/product-schema';
-import { RelatedProducts } from './_components/related-products';
+import { RelatedProducts, RelatedProductsFragment } from './_components/related-products';
 import { ReviewSummary } from './_components/review-summary';
 import { Reviews } from './_components/reviews';
 
@@ -195,6 +196,17 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
   };
 }
 
+const ProductPageQuery = graphql(
+  `
+    query ProductPageQuery($first: Int!, $entityId: Int!) {
+      site {
+        ...RelatedProductsFragment
+      }
+    }
+  `,
+  [RelatedProductsFragment],
+);
+
 export default async function Product({ params, searchParams }: ProductPageProps) {
   const productId = Number(params.slug);
   const { slug, ...options } = searchParams;
@@ -209,6 +221,11 @@ export default async function Product({ params, searchParams }: ProductPageProps
     );
 
   const product = await getProduct(productId, optionValueIds);
+
+  const fragmentData = await execute(ProductPageQuery, {
+    entityId: productId,
+    first: 12,
+  });
 
   if (!product) {
     return notFound();
@@ -243,7 +260,7 @@ export default async function Product({ params, searchParams }: ProductPageProps
       </div>
 
       <Suspense fallback="Loading...">
-        <RelatedProducts optionValueIds={optionValueIds} productId={productId} />
+        <RelatedProducts data={fragmentData.site} />
       </Suspense>
     </>
   );

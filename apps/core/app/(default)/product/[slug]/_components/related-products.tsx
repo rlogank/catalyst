@@ -1,20 +1,39 @@
-import { OptionValueId } from '~/client/generated/graphql';
-import { getRelatedProducts } from '~/client/queries/get-related-products';
+import { removeEdgesAndNodes } from '@bigcommerce/catalyst-client';
+
+import { ProductCardFragment } from '~/components/product-card';
 import { ProductCardCarousel } from '~/components/product-card-carousel';
+import { FragmentOf, graphql, readFragment } from '~/tada/graphql';
 
-export const RelatedProducts = async ({
-  productId,
-  optionValueIds,
-}: {
-  productId: number;
-  optionValueIds: OptionValueId[];
-}) => {
-  const relatedProducts = await getRelatedProducts({
-    productId,
-    optionValueIds,
-    imageWidth: 500,
-    imageHeight: 500,
-  });
+export const RelatedProductsFragment = graphql(
+  `
+    fragment RelatedProductsFragment on Site {
+      product(entityId: $entityId) {
+        relatedProducts(first: $first) {
+          edges {
+            node {
+              ...ProductCardFragment
+            }
+          }
+        }
+      }
+    }
+  `,
+  [ProductCardFragment],
+);
 
-  return <ProductCardCarousel products={relatedProducts} title="Related Products" />;
+interface Props {
+  data: FragmentOf<typeof RelatedProductsFragment>;
+}
+
+export const RelatedProducts = ({ data }: Props) => {
+  const fragmentData = readFragment(RelatedProductsFragment, data);
+  const product = fragmentData.product;
+
+  if (!product) {
+    return null;
+  }
+
+  const relatedProducts = removeEdgesAndNodes(product.relatedProducts);
+
+  return <ProductCardCarousel data={relatedProducts} title="Related Products" />;
 };
