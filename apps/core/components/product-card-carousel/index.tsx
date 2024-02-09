@@ -7,28 +7,33 @@ import {
 } from '@bigcommerce/components/Carousel';
 import { useId } from 'react';
 
-import { Product, ProductCard } from '../product-card';
+import { FragmentOf } from '~/tada/graphql';
+
+import { ProductCard, ProductCardFragment } from '../product-card';
 
 import { Pagination } from './pagination';
 
-export const ProductCardCarousel = ({
-  title,
-  products,
-  showCart = true,
-  showCompare = true,
-}: {
+interface Props {
+  data: Array<FragmentOf<typeof ProductCardFragment>>;
   title: string;
-  products: Array<Partial<Product>>;
   showCart?: boolean;
   showCompare?: boolean;
-}) => {
+}
+
+export const ProductCardCarousel = ({
+  title,
+  data,
+  showCart = true,
+  showCompare = true,
+}: Props) => {
   const id = useId();
+  const products = data;
 
   if (products.length === 0) {
     return null;
   }
 
-  const groupedProducts = products.reduce<Array<Array<Partial<Product>>>>((batches, _, index) => {
+  const groupedProducts = products.reduce<Array<Props['data']>>((batches, _, index) => {
     if (index % 4 === 0) {
       batches.push([]);
     }
@@ -61,11 +66,11 @@ export const ProductCardCarousel = ({
             index={index}
             key={index}
           >
-            {group.map((product) => (
+            {group.map((product, i) => (
               <ProductCard
+                data={product}
                 imageSize="tall"
-                key={product.entityId}
-                product={product}
+                key={i}
                 showCart={showCart}
                 showCompare={showCompare}
               />

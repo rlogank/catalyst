@@ -1,13 +1,38 @@
-import { getBestSellingProducts } from '~/client/queries/get-best-selling-products';
-import { getFeaturedProducts } from '~/client/queries/get-featured-products';
+import { removeEdgesAndNodes } from '@bigcommerce/catalyst-client';
+
 import { Hero } from '~/components/hero';
+import { ProductCardFragment } from '~/components/product-card';
 import { ProductCardCarousel } from '~/components/product-card-carousel';
+import { execute, graphql } from '~/tada/graphql';
+
+const HomepageQuery = graphql(
+  `
+    query HomepageQuery {
+      site {
+        bestSellingProducts {
+          edges {
+            node {
+              ...ProductCardFragment
+            }
+          }
+        }
+        featuredProducts {
+          edges {
+            node {
+              ...ProductCardFragment
+            }
+          }
+        }
+      }
+    }
+  `,
+  [ProductCardFragment],
+);
 
 export default async function Home() {
-  const [bestSellingProducts, featuredProducts] = await Promise.all([
-    getBestSellingProducts({ imageWidth: 500, imageHeight: 500 }),
-    getFeaturedProducts({ imageWidth: 500, imageHeight: 500 }),
-  ]);
+  const data = await execute(HomepageQuery);
+  const bestSellingProducts = removeEdgesAndNodes(data.site.bestSellingProducts);
+  const featuredProducts = removeEdgesAndNodes(data.site.featuredProducts);
 
   return (
     <>
@@ -15,14 +40,14 @@ export default async function Home() {
 
       <div className="my-10">
         <ProductCardCarousel
-          products={bestSellingProducts}
+          data={bestSellingProducts}
           showCart={false}
           showCompare={false}
           title="Best Selling Products"
         />
 
         <ProductCardCarousel
-          products={featuredProducts}
+          data={featuredProducts}
           showCart={false}
           showCompare={false}
           title="Featured Products"
