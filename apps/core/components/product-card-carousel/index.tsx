@@ -5,44 +5,33 @@ import {
   CarouselPreviousIndicator,
   CarouselSlide,
 } from '@bigcommerce/components/Carousel';
-import { useId } from 'react';
-
-import { FragmentOf } from '~/tada/graphql';
-
-import { ProductCard, ProductCardFragment } from '../product-card';
+import { ReactNode, useId } from 'react';
 
 import { Pagination } from './pagination';
 
 interface Props {
-  data: Array<FragmentOf<typeof ProductCardFragment>>;
   title: string;
-  showCart?: boolean;
-  showCompare?: boolean;
+  children: ReactNode[];
 }
 
-export const ProductCardCarousel = ({
-  title,
-  data,
-  showCart = true,
-  showCompare = true,
-}: Props) => {
+export const ProductCardCarousel = ({ title, children }: Props) => {
   const id = useId();
-  const products = data;
 
-  if (products.length === 0) {
+  if (children.length === 0) {
     return null;
   }
 
-  const groupedProducts = products.reduce<Array<Props['data']>>((batches, _, index) => {
-    if (index % 4 === 0) {
-      batches.push([]);
+  const groupedChildren = children.reduce<ReactNode[][]>((batches, product, index) => {
+    // Determine the current batch based on the index
+    const batchIndex = Math.floor(index / 4);
+
+    // If the batch doesn't exist, create it
+    if (!batches[batchIndex]) {
+      batches[batchIndex] = [];
     }
 
-    const product = products[index];
-
-    if (batches[batches.length - 1] && product) {
-      batches[batches.length - 1]?.push(product);
-    }
+    // Add the current product to the current batch
+    batches[batchIndex]?.push(product);
 
     return batches;
   }, []);
@@ -59,26 +48,19 @@ export const ProductCardCarousel = ({
         </span>
       </div>
       <CarouselContent>
-        {groupedProducts.map((group, index) => (
+        {groupedChildren.map((group, index) => (
           <CarouselSlide
-            aria-label={`${index + 1} of ${groupedProducts.length}`}
+            aria-label={`${index + 1} of ${groupedChildren.length}`}
             id={`${id}-slide-${index + 1}`}
             index={index}
             key={index}
           >
-            {group.map((product, i) => (
-              <ProductCard
-                data={product}
-                imageSize="tall"
-                key={i}
-                showCart={showCart}
-                showCompare={showCompare}
-              />
-            ))}
+            {group.map((child) => child)}
           </CarouselSlide>
         ))}
       </CarouselContent>
-      <Pagination groupedProducts={groupedProducts} id={id} />
+
+      <Pagination groupedChildren={groupedChildren} id={id} />
     </Carousel>
   );
 };

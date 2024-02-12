@@ -1,20 +1,19 @@
 'use client';
 
 import { CarouselPagination, CarouselPaginationTab } from '@bigcommerce/components/Carousel';
-
-import { Product } from '../product-card';
+import { ReactNode } from 'react';
 
 export const Pagination = ({
-  groupedProducts,
+  groupedChildren,
   id,
 }: {
-  groupedProducts: Array<Array<Partial<Product>>>;
+  groupedChildren: ReactNode[][];
   id: string;
 }) => {
   return (
     <CarouselPagination>
       {({ selectedIndex, scrollTo }) =>
-        groupedProducts.map((_, index) => (
+        groupedChildren.map((_, index) => (
           <CarouselPaginationTab
             aria-controls={`${id}-slide-${index + 1}`}
             aria-label={`Slide ${index + 1}`}

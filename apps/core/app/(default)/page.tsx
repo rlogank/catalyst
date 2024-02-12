@@ -1,7 +1,7 @@
 import { removeEdgesAndNodes } from '@bigcommerce/catalyst-client';
 
 import { Hero } from '~/components/hero';
-import { ProductCardFragment } from '~/components/product-card';
+import { ProductCard, ProductCardFragment } from '~/components/product-card';
 import { ProductCardCarousel } from '~/components/product-card-carousel';
 import { execute, graphql } from '~/tada/graphql';
 
@@ -39,19 +39,17 @@ export default async function Home() {
       <Hero />
 
       <div className="my-10">
-        <ProductCardCarousel
-          data={bestSellingProducts}
-          showCart={false}
-          showCompare={false}
-          title="Best Selling Products"
-        />
+        <ProductCardCarousel title="Best Selling Products">
+          {bestSellingProducts.map((productCardFragment, i) => (
+            <ProductCard data={productCardFragment} key={i} showCart={false} showCompare={false} />
+          ))}
+        </ProductCardCarousel>
 
-        <ProductCardCarousel
-          data={featuredProducts}
-          showCart={false}
-          showCompare={false}
-          title="Featured Products"
-        />
+        <ProductCardCarousel title="Featured Products">
+          {featuredProducts.map((productCardFragment, i) => (
+            <ProductCard data={productCardFragment} key={i} showCart={false} showCompare={false} />
+          ))}
+        </ProductCardCarousel>
       </div>
     </>
   );
