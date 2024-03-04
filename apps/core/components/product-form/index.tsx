@@ -1,27 +1,26 @@
 'use client';
 
+import { removeEdgesAndNodes } from '@bigcommerce/catalyst-client';
 import { Button } from '@bigcommerce/components/Button';
 import { AlertCircle, Check, Heart } from 'lucide-react';
 import { FormProvider } from 'react-hook-form';
 import { toast } from 'react-hot-toast';
 
-import { getProduct } from '~/client/queries/get-product';
-import { ExistingResultType } from '~/client/util';
+import { FragmentOf, readFragment } from '~/tada/graphql';
 
 import { Link } from '../link';
 
 import { handleAddToCart } from './_actions/add-to-cart';
 import { AddToCart } from './add-to-cart';
-import { CheckboxField } from './fields/checkbox-field';
-import { DateField } from './fields/date-field';
-import { MultiLineTextField } from './fields/multi-line-text-field';
+// import { CheckboxField } from './fields/checkbox-field';
+// import { DateField } from './fields/date-field';
+// import { MultiLineTextField } from './fields/multi-line-text-field';
 import { MultipleChoiceField } from './fields/multiple-choice-field';
-import { NumberField } from './fields/number-field';
+// import { NumberField } from './fields/number-field';
 import { QuantityField } from './fields/quantity-field';
-import { TextField } from './fields/text-field';
+// import { TextField } from './fields/text-field';
+import { ProductFormFragment } from './fragment';
 import { ProductFormData, useProductForm } from './use-product-form';
-
-type Product = ExistingResultType<typeof getProduct>;
 
 export const productFormSubmit = async (data: ProductFormData) => {
   const result = await handleAddToCart(data);
@@ -50,38 +49,45 @@ export const productFormSubmit = async (data: ProductFormData) => {
   );
 };
 
-export const ProductForm = ({ product }: { product: Product }) => {
+interface Props {
+  data: FragmentOf<typeof ProductFormFragment>;
+}
+
+export const ProductForm = ({ data }: Props) => {
   const { handleSubmit, register, ...methods } = useProductForm();
+
+  const product = readFragment(ProductFormFragment, data);
+  const productOptions = removeEdgesAndNodes(product.productOptions);
 
   return (
     <FormProvider handleSubmit={handleSubmit} register={register} {...methods}>
       <form className="flex flex-col gap-6 @container" onSubmit={handleSubmit(productFormSubmit)}>
         <input type="hidden" value={product.entityId} {...register('product_id')} />
 
-        {product.productOptions?.map((option) => {
+        {productOptions.map((option) => {
           if (option.__typename === 'MultipleChoiceOption') {
-            return <MultipleChoiceField key={option.entityId} option={option} />;
+            return <MultipleChoiceField data={option} key={option.entityId} />;
           }
 
-          if (option.__typename === 'CheckboxOption') {
-            return <CheckboxField key={option.entityId} option={option} />;
-          }
+          // if (option.__typename === 'CheckboxOption') {
+          //   return <CheckboxField key={option.entityId} option={option} />;
+          // }
 
-          if (option.__typename === 'NumberFieldOption') {
-            return <NumberField key={option.entityId} option={option} />;
-          }
+          // if (option.__typename === 'NumberFieldOption') {
+          //   return <NumberField key={option.entityId} option={option} />;
+          // }
 
-          if (option.__typename === 'MultiLineTextFieldOption') {
-            return <MultiLineTextField key={option.entityId} option={option} />;
-          }
+          // if (option.__typename === 'MultiLineTextFieldOption') {
+          //   return <MultiLineTextField key={option.entityId} option={option} />;
+          // }
 
-          if (option.__typename === 'TextFieldOption') {
-            return <TextField key={option.entityId} option={option} />;
-          }
+          // if (option.__typename === 'TextFieldOption') {
+          //   return <TextField key={option.entityId} option={option} />;
+          // }
 
-          if (option.__typename === 'DateFieldOption') {
-            return <DateField key={option.entityId} option={option} />;
-          }
+          // if (option.__typename === 'DateFieldOption') {
+          //   return <DateField key={option.entityId} option={option} />;
+          // }
 
           return null;
         })}

@@ -1,9 +1,53 @@
 import { Product as ProductSchemaType, WithContext } from 'schema-dts';
 
-import { getProduct } from '~/client/queries/get-product';
+import { FragmentOf, graphql, readFragment } from '~/tada/graphql';
 
-export const ProductSchema = ({ product }: { product: Awaited<ReturnType<typeof getProduct>> }) => {
-  if (product === null) return null;
+export const ProductSchemaFragment = graphql(`
+  fragment ProductSchemaFragment on Product {
+    name
+    path
+    plainTextDescription
+    sku
+    gtin
+    mpn
+    brand {
+      name
+      path
+    }
+    reviewSummary {
+      numberOfReviews
+      averageRating
+    }
+    defaultImage {
+      url(width: 600)
+    }
+    prices {
+      price {
+        value
+        currencyCode
+      }
+      priceRange {
+        min {
+          value
+        }
+        max {
+          value
+        }
+      }
+    }
+    condition
+    availabilityV2 {
+      status
+    }
+  }
+`);
+
+interface Props {
+  data: FragmentOf<typeof ProductSchemaFragment>;
+}
+
+export const ProductSchema = ({ data }: Props) => {
+  const product = readFragment(ProductSchemaFragment, data);
 
   /* TODO: use common default image when product has no images */
   const image = product.defaultImage ? { image: product.defaultImage.url } : null;

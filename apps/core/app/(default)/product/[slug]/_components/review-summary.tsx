@@ -1,23 +1,24 @@
 import { Rating } from '@bigcommerce/components/Rating';
 import { useId } from 'react';
 
-import { getProductReviews } from '~/client/queries/get-product-reviews';
 import { cn } from '~/lib/utils';
+import { FragmentOf, graphql, readFragment } from '~/tada/graphql';
+
+export const ReviewSummaryFragment = graphql(`
+  fragment ReviewSummaryFragment on Reviews {
+    summationOfRatings
+    numberOfReviews
+    averageRating
+  }
+`);
 
 interface Props {
-  productId: number;
+  data: FragmentOf<typeof ReviewSummaryFragment>;
 }
 
-export const ReviewSummary = async ({ productId }: Props) => {
+export const ReviewSummary = ({ data }: Props) => {
   const summaryId = useId();
-
-  const reviews = await getProductReviews(productId);
-
-  if (!reviews) {
-    return null;
-  }
-
-  const { numberOfReviews, averageRating } = reviews.reviewSummary;
+  const { numberOfReviews, averageRating } = readFragment(ReviewSummaryFragment, data);
 
   const hasNoReviews = numberOfReviews === 0;
 

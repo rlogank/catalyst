@@ -1,15 +1,39 @@
+import { removeEdgesAndNodes } from '@bigcommerce/catalyst-client';
 import { Product as ProductSchemaType, WithContext } from 'schema-dts';
 
-import { getProductReviews } from '~/client/queries/get-product-reviews';
-import { ExistingResultType } from '~/client/util';
+import { FragmentOf, graphql, readFragment } from '~/tada/graphql';
 
-export const ProductReviewSchema = ({
-  reviews,
-  productId,
-}: {
-  reviews: ExistingResultType<typeof getProductReviews>['reviews'];
-  productId: number;
-}) => {
+export const ProductReviewSchemaFragment = graphql(`
+  fragment ProductReviewSchema on Product {
+    entityId
+    reviews(first: 5) {
+      edges {
+        node {
+          entityId
+          author {
+            name
+          }
+          createdAt {
+            utc
+          }
+          rating
+          title
+          text
+        }
+      }
+    }
+  }
+`);
+
+interface Props {
+  data: FragmentOf<typeof ProductReviewSchemaFragment>;
+}
+
+export const ProductReviewSchema = ({ data }: Props) => {
+  const fragmentData = readFragment(ProductReviewSchemaFragment, data);
+  const productId = fragmentData.entityId;
+  const reviews = removeEdgesAndNodes(fragmentData.reviews);
+
   const productReviewSchema: WithContext<ProductSchemaType> = {
     '@context': 'https://schema.org',
     '@type': 'Product',

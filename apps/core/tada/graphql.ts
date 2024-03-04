@@ -41,7 +41,7 @@ export async function execute<Result = any, Variables = any>(
   );
 
   if (!response.ok) {
-    throw new Error('Failed to fetch data');
+    throw new Error(`Failed to fetch data${JSON.stringify(await response.json())}`);
   }
 
   const timeEnd = Date.now();

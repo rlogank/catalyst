@@ -1,6 +1,7 @@
+import { removeEdgesAndNodes } from '@bigcommerce/catalyst-client';
 import { Rating } from '@bigcommerce/components/Rating';
 
-import { getProductReviews } from '~/client/queries/get-product-reviews';
+import { FragmentOf, graphql, readFragment } from '~/tada/graphql';
 
 import { ProductReviewSchema } from './product-review-schema';
 
@@ -8,13 +9,32 @@ interface Props {
   productId: number;
 }
 
-export const Reviews = async ({ productId }: Props) => {
-  const product = await getProductReviews(productId);
-  const reviews = product?.reviews;
-
-  if (!reviews) {
-    return null;
+export const ReviewsFragment = graphql(`
+  fragment ReviewsFragment on ReviewConnection {
+    edges {
+      node {
+        entityId
+        author {
+          name
+        }
+        createdAt {
+          utc
+        }
+        rating
+        title
+        text
+      }
+    }
   }
+`);
+
+interface Props {
+  data: FragmentOf<typeof ReviewsFragment>;
+}
+
+export const Reviews = ({ data }: Props) => {
+  const fragmentData = readFragment(ReviewsFragment, data);
+  const reviews = removeEdgesAndNodes(fragmentData);
 
   return (
     <>

@@ -1,18 +1,16 @@
 import { removeEdgesAndNodes } from '@bigcommerce/catalyst-client';
 
-import { ProductCardFragment } from '~/components/product-card';
+import { ProductCard, ProductCardFragment } from '~/components/product-card';
 import { ProductCardCarousel } from '~/components/product-card-carousel';
 import { FragmentOf, graphql, readFragment } from '~/tada/graphql';
 
 export const RelatedProductsFragment = graphql(
   `
-    fragment RelatedProductsFragment on Site {
-      product(entityId: $entityId) {
-        relatedProducts(first: $first) {
-          edges {
-            node {
-              ...ProductCardFragment
-            }
+    fragment RelatedProductsFragment on Product {
+      relatedProducts(first: $firstRelatedProducts) {
+        edges {
+          node {
+            ...ProductCardFragment
           }
         }
       }
@@ -27,13 +25,13 @@ interface Props {
 
 export const RelatedProducts = ({ data }: Props) => {
   const fragmentData = readFragment(RelatedProductsFragment, data);
-  const product = fragmentData.product;
+  const relatedProducts = removeEdgesAndNodes(fragmentData.relatedProducts);
 
-  if (!product) {
-    return null;
-  }
-
-  const relatedProducts = removeEdgesAndNodes(product.relatedProducts);
-
-  return <ProductCardCarousel data={relatedProducts} title="Related Products" />;
+  return (
+    <ProductCardCarousel title="Related Products">
+      {relatedProducts.map((relatedProductsFragment, i) => (
+        <ProductCard data={relatedProductsFragment} key={i} />
+      ))}
+    </ProductCardCarousel>
+  );
 };
