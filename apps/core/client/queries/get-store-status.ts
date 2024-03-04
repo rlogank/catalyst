@@ -1,7 +1,7 @@
 import { client } from '..';
-import { graphql } from '../generated';
+import { graphql } from '../graphql';
 
-export const GET_STORE_STATUS_QUERY = /* GraphQL */ `
+const GET_STORE_STATUS_QUERY = /* GraphQL */ `
   query getStoreStatus {
     site {
       settings {

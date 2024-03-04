@@ -1,5 +1,5 @@
 import { client } from '..';
-import { graphql } from '../generated';
+import { graphql } from '../graphql';
 import { revalidate } from '../revalidate-target';
 
 const GET_RECAPTCHA_SETTINGS_QUERY = /* GraphQL */ `

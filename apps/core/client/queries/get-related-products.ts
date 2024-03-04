@@ -4,12 +4,13 @@ import { cache } from 'react';
 import { getSessionCustomerId } from '~/auth';
 
 import { client } from '..';
-import { graphql } from '../generated';
+import { PRODUCT_DETAILS_FRAGMENT } from '../fragments/product-details';
+import { graphql } from '../graphql';
 import { revalidate } from '../revalidate-target';
 
-import { GetProductOptions } from './get-product';
+import { GetProductOptions, PRICES_FRAGMENT } from './get-product';
 
-export const GET_RELATED_PRODUCTS = /* GraphQL */ `
+const GET_RELATED_PRODUCTS = /* GraphQL */ `
   query getRelatedProducts(
     $entityId: Int!
     $optionValueIds: [OptionValueId!]
@@ -41,7 +42,10 @@ export const getRelatedProducts = cache(
   ) => {
     const { productId, optionValueIds, first = 12, imageWidth = 300, imageHeight = 300 } = options;
 
-    const query = graphql(GET_RELATED_PRODUCTS);
+    const query = graphql(GET_RELATED_PRODUCTS, [
+      graphql(PRODUCT_DETAILS_FRAGMENT),
+      graphql(PRICES_FRAGMENT),
+    ]);
     const customerId = await getSessionCustomerId();
 
     const response = await client.fetch({

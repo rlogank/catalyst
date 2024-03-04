@@ -4,7 +4,8 @@ import { cache } from 'react';
 import { getSessionCustomerId } from '~/auth';
 
 import { client } from '..';
-import { graphql } from '../generated';
+import { PRODUCT_DETAILS_FRAGMENT } from '../fragments/product-details';
+import { graphql } from '../graphql';
 import { revalidate } from '../revalidate-target';
 
 export interface GetProductsArguments {
@@ -30,7 +31,7 @@ const GET_PRODUCTS_QUERY = /* GraphQL */ `
 
 export const getProducts = cache(
   async ({ productIds, first, imageWidth = 300, imageHeight = 300 }: GetProductsArguments) => {
-    const query = graphql(GET_PRODUCTS_QUERY);
+    const query = graphql(GET_PRODUCTS_QUERY, [graphql(PRODUCT_DETAILS_FRAGMENT)]);
     const customerId = await getSessionCustomerId();
 
     const response = await client.fetch({

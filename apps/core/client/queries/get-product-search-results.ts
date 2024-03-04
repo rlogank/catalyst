@@ -4,9 +4,13 @@ import { cache } from 'react';
 import { getSessionCustomerId } from '~/auth';
 
 import { client } from '..';
-import { graphql } from '../generated';
+import { PAGE_DETAILS_FRAGMENT } from '../fragments/page-details';
+import { PRODUCT_DETAILS_FRAGMENT } from '../fragments/product-details';
 import { SearchProductsFiltersInput, SearchProductsSortInput } from '../generated/graphql';
+import { graphql } from '../graphql';
 import { revalidate } from '../revalidate-target';
+
+import { PRICES_FRAGMENT } from './get-product';
 
 interface ProductSearch {
   limit?: number;
@@ -168,7 +172,10 @@ export const getProductSearchResults = cache(
     imageHeight = 300,
     imageWidth = 300,
   }: ProductSearch) => {
-    const query = graphql(GET_PRODUCT_SEARCH_RESULTS_QUERY);
+    const query = graphql(GET_PRODUCT_SEARCH_RESULTS_QUERY, [
+      graphql(PAGE_DETAILS_FRAGMENT),
+      graphql(PRODUCT_DETAILS_FRAGMENT, [graphql(PRICES_FRAGMENT)]),
+    ]);
     const customerId = await getSessionCustomerId();
 
     const response = await client.fetch({

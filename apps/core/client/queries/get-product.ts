@@ -4,7 +4,7 @@ import { cache } from 'react';
 import { getSessionCustomerId } from '~/auth';
 
 import { client } from '..';
-import { graphql } from '../generated';
+import { graphql } from '../graphql';
 import { revalidate } from '../revalidate-target';
 import { ExistingResultType } from '../util';
 
@@ -53,7 +53,7 @@ export const PRICES_FRAGMENT = /* GraphQL */ `
   }
 `;
 
-export const BASIC_PRODUCT_FRAGMENT = /* GraphQL */ `
+const BASIC_PRODUCT_FRAGMENT = /* GraphQL */ `
   fragment BasicProduct on Product {
     id
     entityId
@@ -67,7 +67,7 @@ export const BASIC_PRODUCT_FRAGMENT = /* GraphQL */ `
   }
 `;
 
-export const PRODUCT_OPTIONS_FRAGMENT = /* GraphQL */ `
+const PRODUCT_OPTIONS_FRAGMENT = /* GraphQL */ `
   fragment ProductOptions on Product {
     productOptions(first: 10) {
       edges {
@@ -144,7 +144,7 @@ export const PRODUCT_OPTIONS_FRAGMENT = /* GraphQL */ `
   }
 `;
 
-export const GET_PRODUCT_QUERY = /* GraphQL */ `
+const GET_PRODUCT_QUERY = /* GraphQL */ `
   query getProduct($productId: Int!, $optionValueIds: [OptionValueId!]) {
     site {
       product(entityId: $productId, optionValueIds: $optionValueIds) {
@@ -221,7 +221,11 @@ export const GET_PRODUCT_QUERY = /* GraphQL */ `
 `;
 
 const getInternalProduct = async (productId: number, optionValueIds?: OptionValueId[]) => {
-  const query = graphql(GET_PRODUCT_QUERY);
+  const query = graphql(GET_PRODUCT_QUERY, [
+    graphql(BASIC_PRODUCT_FRAGMENT),
+    graphql(PRICES_FRAGMENT),
+    graphql(PRODUCT_OPTIONS_FRAGMENT),
+  ]);
   const customerId = await getSessionCustomerId();
 
   const response = await client.fetch({

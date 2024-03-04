@@ -2,7 +2,8 @@ import { removeEdgesAndNodes } from '@bigcommerce/catalyst-client';
 import { cache } from 'react';
 
 import { client } from '..';
-import { graphql } from '../generated';
+import { PAGE_DETAILS_FRAGMENT } from '../fragments/page-details';
+import { graphql } from '../graphql';
 import { revalidate } from '../revalidate-target';
 
 interface BlogPostsFiltersInput {
@@ -67,7 +68,7 @@ export const getBlogPosts = cache(
     const filterArgs = tagId ? { filters: { tags: [tagId] } } : {};
     const paginationArgs = before ? { last: limit, before } : { first: limit, after };
 
-    const query = graphql(GET_BLOG_POSTS_QUERY);
+    const query = graphql(GET_BLOG_POSTS_QUERY, [graphql(PAGE_DETAILS_FRAGMENT)]);
 
     const response = await client.fetch({
       document: query,

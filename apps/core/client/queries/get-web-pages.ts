@@ -2,13 +2,14 @@ import { removeEdgesAndNodes } from '@bigcommerce/catalyst-client';
 import { cache } from 'react';
 
 import { client } from '..';
-import { graphql } from '../generated';
+import { WEB_PAGE_FRAGMENT } from '../fragments/web-page';
+import { graphql } from '../graphql';
 import { revalidate } from '../revalidate-target';
 import { ExistingResultType } from '../util';
 
 export type AvailableWebPages = ExistingResultType<typeof getWebPages>;
 
-export const GET_WEB_PAGES_QUERY = /* GraphQL */ `
+const GET_WEB_PAGES_QUERY = /* GraphQL */ `
   query getWebPages {
     site {
       content {
@@ -40,7 +41,7 @@ export const GET_WEB_PAGES_QUERY = /* GraphQL */ `
 `;
 
 export const getWebPages = cache(async () => {
-  const query = graphql(GET_WEB_PAGES_QUERY);
+  const query = graphql(GET_WEB_PAGES_QUERY, [graphql(WEB_PAGE_FRAGMENT)]);
 
   const response = await client.fetch({
     document: query,

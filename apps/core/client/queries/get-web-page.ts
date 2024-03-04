@@ -1,10 +1,11 @@
 import { cache } from 'react';
 
 import { client } from '..';
-import { graphql } from '../generated';
+import { WEB_PAGE_FRAGMENT } from '../fragments/web-page';
+import { graphql } from '../graphql';
 import { revalidate } from '../revalidate-target';
 
-export const GET_WEB_PAGE_QUERY = /* GraphQL */ `
+const GET_WEB_PAGE_QUERY = /* GraphQL */ `
   query getWebPage($path: String!, $characterLimit: Int = 120) {
     site {
       route(path: $path) {
@@ -55,7 +56,7 @@ export interface Options {
 }
 
 export const getWebPage = cache(async ({ path, characterLimit = 120 }: Options) => {
-  const query = graphql(GET_WEB_PAGE_QUERY);
+  const query = graphql(GET_WEB_PAGE_QUERY, [graphql(WEB_PAGE_FRAGMENT)]);
 
   const response = await client.fetch({
     document: query,

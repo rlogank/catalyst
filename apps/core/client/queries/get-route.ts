@@ -1,8 +1,8 @@
 import { client } from '..';
-import { graphql } from '../generated';
+import { graphql } from '../graphql';
 import { revalidate } from '../revalidate-target';
 
-export const GET_ROUTE_QUERY = /* GraphQL */ `
+const GET_ROUTE_QUERY = /* GraphQL */ `
   query getRoute($path: String!) {
     site {
       route(path: $path) {

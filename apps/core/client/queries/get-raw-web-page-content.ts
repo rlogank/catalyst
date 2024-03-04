@@ -1,7 +1,7 @@
 import { client } from '..';
-import { graphql } from '../generated';
+import { graphql } from '../graphql';
 
-export const GET_RAW_WEB_PAGE_CONTENT_QUERY = /* GraphQL */ `
+const GET_RAW_WEB_PAGE_CONTENT_QUERY = /* GraphQL */ `
   query getRawWebPageContent($id: ID!) {
     node(id: $id) {
       __typename

@@ -1,7 +1,7 @@
 import { cache } from 'react';
 
 import { client } from '..';
-import { graphql } from '../generated';
+import { graphql } from '../graphql';
 import { revalidate } from '../revalidate-target';
 
 const GET_BLOG_POST_QUERY = /* GraphQL */ `

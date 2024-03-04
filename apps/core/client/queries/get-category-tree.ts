@@ -3,10 +3,10 @@ import { cache } from 'react';
 import { getSessionCustomerId } from '~/auth';
 
 import { client } from '..';
-import { graphql } from '../generated';
+import { graphql } from '../graphql';
 import { revalidate } from '../revalidate-target';
 
-export const GET_CATEGORY_TREE_QUERY = /* GraphQL */ `
+const GET_CATEGORY_TREE_QUERY = /* GraphQL */ `
   query getCategoryTree($categoryId: Int) {
     site {
       categoryTree(rootEntityId: $categoryId) {

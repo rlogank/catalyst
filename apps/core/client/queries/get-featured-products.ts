@@ -4,10 +4,13 @@ import { cache } from 'react';
 import { getSessionCustomerId } from '~/auth';
 
 import { client } from '..';
-import { graphql } from '../generated';
+import { PRODUCT_DETAILS_FRAGMENT } from '../fragments/product-details';
+import { graphql } from '../graphql';
 import { revalidate } from '../revalidate-target';
 
-export const GET_FEATURED_PRODUCTS_QUERY = /* GraphQL */ `
+import { PRICES_FRAGMENT } from './get-product';
+
+const GET_FEATURED_PRODUCTS_QUERY = /* GraphQL */ `
   query getFeaturedProducts($first: Int, $imageHeight: Int!, $imageWidth: Int!) {
     site {
       featuredProducts(first: $first) {
@@ -29,7 +32,10 @@ interface Options {
 
 export const getFeaturedProducts = cache(
   async ({ first = 12, imageHeight = 300, imageWidth = 300 }: Options = {}) => {
-    const query = graphql(GET_FEATURED_PRODUCTS_QUERY);
+    const query = graphql(GET_FEATURED_PRODUCTS_QUERY, [
+      graphql(PRODUCT_DETAILS_FRAGMENT),
+      graphql(PRICES_FRAGMENT),
+    ]);
     const customerId = await getSessionCustomerId();
 
     const response = await client.fetch({

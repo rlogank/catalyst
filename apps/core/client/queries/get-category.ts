@@ -4,10 +4,11 @@ import { cache } from 'react';
 import { getSessionCustomerId } from '~/auth';
 
 import { client } from '..';
-import { graphql } from '../generated';
+import { PAGE_DETAILS_FRAGMENT } from '../fragments/page-details';
+import { graphql } from '../graphql';
 import { revalidate } from '../revalidate-target';
 
-export const GET_CATEGORY_QUERY = /* GraphQL */ `
+const GET_CATEGORY_QUERY = /* GraphQL */ `
   query getCategory(
     $after: String
     $before: String
@@ -69,7 +70,7 @@ export interface CategoryOptions {
 
 export const getCategory = cache(
   async ({ categoryId, limit = 9, before, after, breadcrumbDepth = 10 }: CategoryOptions) => {
-    const query = graphql(GET_CATEGORY_QUERY);
+    const query = graphql(GET_CATEGORY_QUERY, [graphql(PAGE_DETAILS_FRAGMENT)]);
     const customerId = await getSessionCustomerId();
 
     const paginationArgs = before ? { last: limit, before } : { first: limit, after };

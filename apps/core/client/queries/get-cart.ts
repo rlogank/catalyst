@@ -3,9 +3,10 @@ import { cache } from 'react';
 import { getSessionCustomerId } from '~/auth';
 
 import { client } from '..';
-import { graphql } from '../generated';
+import { MONEY_FIELDS_FRAGMENT } from '../fragments/money-fields';
+import { graphql } from '../graphql';
 
-export const GET_CART_QUERY = /* GraphQL */ `
+const GET_CART_QUERY = /* GraphQL */ `
   query getCart($cartId: String) {
     site {
       cart(entityId: $cartId) {
@@ -66,7 +67,7 @@ export const GET_CART_QUERY = /* GraphQL */ `
 `;
 
 export const getCart = cache(async (cartId?: string) => {
-  const query = graphql(GET_CART_QUERY);
+  const query = graphql(GET_CART_QUERY, [graphql(MONEY_FIELDS_FRAGMENT)]);
   const customerId = await getSessionCustomerId();
 
   const response = await client.fetch({
