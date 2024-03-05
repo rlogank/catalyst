@@ -3,7 +3,7 @@ import { NextFetchEvent, NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 
 import { getSessionCustomerId } from '~/auth';
-import { StorefrontStatusType } from '~/client/generated/graphql';
+import { graphql } from '~/client/graphql';
 import { getRawWebPageContent } from '~/client/queries/get-raw-web-page-content';
 import { getRoute } from '~/client/queries/get-route';
 import { getStoreStatus } from '~/client/queries/get-store-status';
@@ -14,6 +14,7 @@ import { kv } from '../lib/kv';
 import { type MiddlewareFactory } from './compose-middlewares';
 
 type Route = Awaited<ReturnType<typeof getRoute>>;
+type StorefrontStatusType = ReturnType<typeof graphql.scalar<'StorefrontStatusType'>>;
 
 interface RouteCache {
   route: Route;
@@ -34,7 +35,12 @@ const createRewriteUrl = (path: string, request: NextRequest) => {
 };
 
 const StorefrontStatusCacheSchema = z.object({
-  status: z.nativeEnum(StorefrontStatusType),
+  status: z.union([
+    z.literal('HIBERNATION'),
+    z.literal('LAUNCHED'),
+    z.literal('MAINTENANCE'),
+    z.literal('PRE_LAUNCH'),
+  ]) satisfies z.ZodType<StorefrontStatusType>,
   expiryTime: z.number(),
 });
 

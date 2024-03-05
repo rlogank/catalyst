@@ -13,6 +13,7 @@ const GET_STORE_STATUS_QUERY = /* GraphQL */ `
 
 export const getStoreStatus = async () => {
   const query = graphql(GET_STORE_STATUS_QUERY);
+
   const { data } = await client.fetch({
     document: query,
     fetchOptions: { next: { revalidate: 300 } },
