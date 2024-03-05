@@ -1,6 +1,6 @@
 import { client } from '..';
-import { graphql } from '../generated';
 import { AssignCartToCustomerInput } from '../generated/graphql';
+import { graphql } from '../graphql';
 
 export const ASSIGN_CART_TO_CUSTOMER_MUTATION = /* GraphQL */ `
   mutation AssignCartToCustomer($assignCartToCustomerInput: AssignCartToCustomerInput!) {

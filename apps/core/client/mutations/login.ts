@@ -1,5 +1,5 @@
 import { client } from '..';
-import { graphql } from '../generated';
+import { graphql } from '../graphql';
 
 export const LOGIN_MUTATION = /* GraphQL */ `
   mutation Login($email: String!, $password: String!) {

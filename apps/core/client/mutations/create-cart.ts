@@ -1,8 +1,8 @@
 import { getSessionCustomerId } from '~/auth';
 
 import { client } from '..';
-import { graphql } from '../generated';
 import { CreateCartInput } from '../generated/graphql';
+import { graphql } from '../graphql';
 
 export const CREATE_CART_MUTATION = /* GraphQL */ `
   mutation CreateCart($createCartInput: CreateCartInput!) {

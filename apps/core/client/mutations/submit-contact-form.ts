@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 import { client } from '..';
-import { graphql } from '../generated';
+import { graphql } from '../graphql';
 
 export const ContactUsSchema = z.object({
   companyName: z.string().optional(),

@@ -1,7 +1,7 @@
 import { getSessionCustomerId } from '~/auth';
 
 import { client } from '..';
-import { graphql } from '../generated';
+import { graphql } from '../graphql';
 
 export const DELETE_CART_LINE_ITEM = /* GraphQL */ `
   mutation DeleteCartLineItem($input: DeleteCartLineItemInput!) {

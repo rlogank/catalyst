@@ -1,5 +1,5 @@
 import { client } from '..';
-import { graphql } from '../generated';
+import { graphql } from '../graphql';
 
 export const SELECT_CHECKOUT_SHIPPING_OPTION_MUTATION = /* GraphQL */ `
   mutation SelectCheckoutShippingOption($input: SelectCheckoutShippingOptionInput!) {

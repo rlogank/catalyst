@@ -1,8 +1,8 @@
 import { getSessionCustomerId } from '~/auth';
 
 import { client } from '..';
-import { graphql } from '../generated';
 import { UnassignCartFromCustomerInput } from '../generated/graphql';
+import { graphql } from '../graphql';
 
 export const UNASSIGN_CART_FROM_CUSTOMER_MUTATION = /* GraphQL */ `
   mutation UnassignCartFromCustomer(
