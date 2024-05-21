@@ -21,6 +21,56 @@ import { writeEnv } from '../utils/write-env';
 
 const exec = promisify(execCallback);
 
+async function getProjectDirectory(options: {
+  projectDir: string;
+  projectName: string | undefined;
+}) {
+  let projectDir = options.projectDir;
+  let projectName = kebabCase(options.projectName);
+
+  if (!pathExistsSync(projectDir)) {
+    console.error(chalk.red(`Error: ${options.projectDir} is not a valid project directory\n`));
+    process.exit(1);
+  }
+
+  if (projectName) {
+    projectDir = join(projectDir, projectName);
+
+    if (pathExistsSync(projectDir)) {
+      console.error(chalk.red(`Error: ${projectDir} already exists\n`));
+      process.exit(1);
+    }
+
+    return { projectName, projectDir };
+  }
+
+  try {
+    await input({
+      message: 'What would you like to name your project?',
+      default: 'my-catalyst-app',
+      validate: (i) => {
+        const targetName = kebabCase(i);
+        const targetDir = join(projectDir, targetName);
+
+        if (!targetName) return 'Project name is required';
+        if (pathExistsSync(targetDir)) return `Destination '${targetDir}' already exists`;
+
+        projectDir = targetDir;
+        projectName = targetName;
+
+        return true;
+      },
+    });
+  } catch (error) {
+    if (error instanceof Error && error.message.includes('User force closed the prompt')) {
+      console.log('\nBye! 👋\n');
+      process.exit(0);
+    }
+  }
+
+  return { projectName, projectDir };
+}
+
 export const create = new Command('create')
   .description('Command to scaffold and connect a Catalyst storefront to your BigCommerce store')
   .option('--project-name <name>', 'Name of your Catalyst project')
@@ -63,6 +113,11 @@ export const create = new Command('create')
       .hideHelp(),
   )
   .action(async (options) => {
+    const { projectName, projectDir } = await getProjectDirectory({
+      projectDir: options.projectDir,
+      projectName: options.projectName,
+    });
+
     const { packageManager, codeEditor, includeFunctionalTests } = options;
 
     const URLSchema = z.string().url();
@@ -78,8 +133,6 @@ export const create = new Command('create')
       ghRef = options.ghRef;
     }
 
-    let projectName;
-    let projectDir;
     let storeHash = options.storeHash;
     let accessToken = options.accessToken;
     let channelId;
@@ -89,53 +142,12 @@ export const create = new Command('create')
       channelId = parseInt(options.channelId, 10);
     }
 
-    if (!pathExistsSync(options.projectDir)) {
-      console.error(chalk.red(`Error: --projectDir ${options.projectDir} is not a valid path\n`));
-      process.exit(1);
-    }
-
-    if (options.projectName) {
-      projectName = kebabCase(options.projectName);
-      projectDir = join(options.projectDir, projectName);
-
-      if (pathExistsSync(projectDir)) {
-        console.error(chalk.red(`Error: ${projectDir} already exists\n`));
-        process.exit(1);
-      }
-    }
-
-    if (!options.projectName) {
-      const validateProjectName = (i: string) => {
-        const formatted = kebabCase(i);
-
-        if (!formatted) return 'Project name is required';
-
-        const targetDir = join(options.projectDir, formatted);
-
-        if (pathExistsSync(targetDir)) return `Destination '${targetDir}' already exists`;
-
-        projectName = formatted;
-        projectDir = targetDir;
-
-        return true;
-      };
-
-      await input({
-        message: 'What is the name of your project?',
-        default: 'my-catalyst-app',
-        validate: validateProjectName,
-      });
-    }
-
     if (!options.storeHash || !options.accessToken) {
       const credentials = await login(bigcommerceAuthUrl);
 
       storeHash = credentials.storeHash;
       accessToken = credentials.accessToken;
     }
-
-    if (!projectName) throw new Error('Something went wrong, projectName is not defined');
-    if (!projectDir) throw new Error('Something went wrong, projectDir is not defined');
 
     if (!storeHash || !accessToken) {
       console.log(`\nCreating '${projectName}' at '${projectDir}'\n`);
