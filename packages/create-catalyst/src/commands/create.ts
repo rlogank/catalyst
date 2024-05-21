@@ -6,7 +6,6 @@ import { pathExistsSync } from 'fs-extra/esm';
 import kebabCase from 'lodash.kebabcase';
 import { join } from 'path';
 import { promisify } from 'util';
-import { z } from 'zod';
 
 import { checkStorefrontLimit } from '../utils/check-storefront-limit';
 import { cloneCatalyst } from '../utils/clone-catalyst';
@@ -14,7 +13,6 @@ import { getLatestCoreTag } from '../utils/get-latest-core-tag';
 import { Https } from '../utils/https';
 import { installDependencies } from '../utils/install-dependencies';
 import { login } from '../utils/login';
-import { parse } from '../utils/parse';
 import { getPackageManager, packageManagerChoices } from '../utils/pm';
 import { spinner } from '../utils/spinner';
 import { writeEnv } from '../utils/write-env';
@@ -86,16 +84,6 @@ export const create = new Command('create')
     ).default(getLatestCoreTag),
   )
   .addOption(
-    new Option('--bigcommerce-hostname <hostname>', 'BigCommerce hostname')
-      .default('bigcommerce.com')
-      .hideHelp(),
-  )
-  .addOption(
-    new Option('--sample-data-api-url <url>', 'BigCommerce sample data API URL')
-      .default('https://api.bc-sample.store')
-      .hideHelp(),
-  )
-  .addOption(
     new Option('--package-manager <pm>', 'Override detected package manager')
       .choices(packageManagerChoices)
       .default(getPackageManager())
@@ -113,17 +101,16 @@ export const create = new Command('create')
       .hideHelp(),
   )
   .action(async (options) => {
+    const SAMPLE_DATA_API_URL = process.env.SAMPLE_DATA_API_URL ?? 'https://api.bc-sample.store';
+    const BIGCOMMERCE_API_URL = process.env.BIGCOMMERCE_API_URL ?? 'https://api.bigcommerce.com';
+    const BIGCOMMERCE_IAM_URL = process.env.BIGCOMMRECE_IAM_URL ?? 'https://login.bigcommerce.com';
+
     const { projectName, projectDir } = await getProjectDirectory({
       projectDir: options.projectDir,
       projectName: options.projectName,
     });
 
     const { packageManager, codeEditor, includeFunctionalTests } = options;
-
-    const URLSchema = z.string().url();
-    const sampleDataApiUrl = parse(options.sampleDataApiUrl, URLSchema);
-    const bigcommerceApiUrl = parse(`https://api.${options.bigcommerceHostname}`, URLSchema);
-    const bigcommerceAuthUrl = parse(`https://login.${options.bigcommerceHostname}`, URLSchema);
 
     let ghRef: string;
 
@@ -143,7 +130,7 @@ export const create = new Command('create')
     }
 
     if (!options.storeHash || !options.accessToken) {
-      const credentials = await login(bigcommerceAuthUrl);
+      const credentials = await login(BIGCOMMERCE_IAM_URL);
 
       storeHash = credentials.storeHash;
       accessToken = credentials.accessToken;
@@ -171,7 +158,7 @@ export const create = new Command('create')
     }
 
     if (!channelId || !customerImpersonationToken) {
-      const bc = new Https({ bigCommerceApiUrl: bigcommerceApiUrl, storeHash, accessToken });
+      const bc = new Https({ bigCommerceApiUrl: BIGCOMMERCE_API_URL, storeHash, accessToken });
       const availableChannels = await bc.channels('?available=true&type=storefront');
       const storeInfo = await bc.storeInformation();
 
@@ -195,7 +182,7 @@ export const create = new Command('create')
         });
 
         const sampleDataApi = new Https({
-          sampleDataApiUrl,
+          sampleDataApiUrl: SAMPLE_DATA_API_URL,
           storeHash,
           accessToken,
         });
