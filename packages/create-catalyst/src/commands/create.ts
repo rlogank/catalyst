@@ -1,4 +1,4 @@
-import { Command, Option } from '@commander-js/extra-typings';
+import { Command } from '@commander-js/extra-typings';
 import { input, select } from '@inquirer/prompts';
 import chalk from 'chalk';
 import { exec as execCallback } from 'child_process';
@@ -81,11 +81,7 @@ export const create = new Command('create')
   .option('--gh-ref <ref>', 'Clone a specific ref from the bigcommerce/catalyst repository')
   .option('--package-manager <pm>', 'Override detected package manager', getPackageManager())
   .option('--code-editor <editor>', 'Your preferred code editor', 'vscode')
-  .addOption(
-    new Option('--include-functional-tests', 'Include the functional test suite')
-      .default(false)
-      .hideHelp(),
-  )
+  .option('--include-functional-tests', 'Include the functional test suite', false)
   .action(async (options) => {
     const SAMPLE_DATA_API_URL = process.env.SAMPLE_DATA_API_URL ?? 'https://api.bc-sample.store';
     const BIGCOMMERCE_API_URL = process.env.BIGCOMMERCE_API_URL ?? 'https://api.bigcommerce.com';
@@ -93,6 +89,7 @@ export const create = new Command('create')
 
     const ghRef = options.ghRef ?? (await getLatestCoreTag());
     const codeEditor = z.literal('vscode').parse(options.codeEditor);
+    const includeFunctionalTests = z.boolean().parse(options.includeFunctionalTests);
     const packageManager = z
       .union([z.literal('npm'), z.literal('yarn'), z.literal('pnpm')])
       .parse(options.packageManager);
@@ -101,8 +98,6 @@ export const create = new Command('create')
       projectDir: options.projectDir,
       projectName: options.projectName,
     });
-
-    const { includeFunctionalTests } = options;
 
     let storeHash = options.storeHash;
     let accessToken = options.accessToken;
