@@ -77,12 +77,7 @@ export const create = new Command('create')
   .option('--access-token <token>', 'BigCommerce access token')
   .option('--channel-id <id>', 'BigCommerce channel ID')
   .option('--customer-impersonation-token <token>', 'BigCommerce customer impersonation token')
-  .addOption(
-    new Option(
-      '--gh-ref <ref>',
-      'Clone a specific ref from the bigcommerce/catalyst repository',
-    ).default(getLatestCoreTag),
-  )
+  .option('--gh-ref <ref>', 'Clone a specific ref from the bigcommerce/catalyst repository')
   .addOption(
     new Option('--package-manager <pm>', 'Override detected package manager')
       .choices(packageManagerChoices)
@@ -105,20 +100,14 @@ export const create = new Command('create')
     const BIGCOMMERCE_API_URL = process.env.BIGCOMMERCE_API_URL ?? 'https://api.bigcommerce.com';
     const BIGCOMMERCE_IAM_URL = process.env.BIGCOMMRECE_IAM_URL ?? 'https://login.bigcommerce.com';
 
+    const ghRef = options.ghRef ?? (await getLatestCoreTag());
+
     const { projectName, projectDir } = await getProjectDirectory({
       projectDir: options.projectDir,
       projectName: options.projectName,
     });
 
     const { packageManager, codeEditor, includeFunctionalTests } = options;
-
-    let ghRef: string;
-
-    if (options.ghRef instanceof Function) {
-      ghRef = await options.ghRef();
-    } else {
-      ghRef = options.ghRef;
-    }
 
     let storeHash = options.storeHash;
     let accessToken = options.accessToken;
