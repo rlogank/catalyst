@@ -80,12 +80,7 @@ export const create = new Command('create')
   .option('--customer-impersonation-token <token>', 'BigCommerce customer impersonation token')
   .option('--gh-ref <ref>', 'Clone a specific ref from the bigcommerce/catalyst repository')
   .option('--package-manager <pm>', 'Override detected package manager', getPackageManager())
-  .addOption(
-    new Option('--code-editor <editor>', 'Your preferred code editor')
-      .choices(['vscode'])
-      .default('vscode')
-      .hideHelp(),
-  )
+  .option('--code-editor <editor>', 'Your preferred code editor', 'vscode')
   .addOption(
     new Option('--include-functional-tests', 'Include the functional test suite')
       .default(false)
@@ -97,6 +92,7 @@ export const create = new Command('create')
     const BIGCOMMERCE_IAM_URL = process.env.BIGCOMMRECE_IAM_URL ?? 'https://login.bigcommerce.com';
 
     const ghRef = options.ghRef ?? (await getLatestCoreTag());
+    const codeEditor = z.literal('vscode').parse(options.codeEditor);
     const packageManager = z
       .union([z.literal('npm'), z.literal('yarn'), z.literal('pnpm')])
       .parse(options.packageManager);
@@ -106,7 +102,7 @@ export const create = new Command('create')
       projectName: options.projectName,
     });
 
-    const { codeEditor, includeFunctionalTests } = options;
+    const { includeFunctionalTests } = options;
 
     let storeHash = options.storeHash;
     let accessToken = options.accessToken;
