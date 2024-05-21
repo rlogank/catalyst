@@ -6,6 +6,7 @@ import { pathExistsSync } from 'fs-extra/esm';
 import kebabCase from 'lodash.kebabcase';
 import { join } from 'path';
 import { promisify } from 'util';
+import * as z from 'zod';
 
 import { checkStorefrontLimit } from '../utils/check-storefront-limit';
 import { cloneCatalyst } from '../utils/clone-catalyst';
@@ -13,7 +14,7 @@ import { getLatestCoreTag } from '../utils/get-latest-core-tag';
 import { Https } from '../utils/https';
 import { installDependencies } from '../utils/install-dependencies';
 import { login } from '../utils/login';
-import { getPackageManager, packageManagerChoices } from '../utils/pm';
+import { getPackageManager } from '../utils/pm';
 import { spinner } from '../utils/spinner';
 import { writeEnv } from '../utils/write-env';
 
@@ -78,12 +79,7 @@ export const create = new Command('create')
   .option('--channel-id <id>', 'BigCommerce channel ID')
   .option('--customer-impersonation-token <token>', 'BigCommerce customer impersonation token')
   .option('--gh-ref <ref>', 'Clone a specific ref from the bigcommerce/catalyst repository')
-  .addOption(
-    new Option('--package-manager <pm>', 'Override detected package manager')
-      .choices(packageManagerChoices)
-      .default(getPackageManager())
-      .hideHelp(),
-  )
+  .option('--package-manager <pm>', 'Override detected package manager', getPackageManager())
   .addOption(
     new Option('--code-editor <editor>', 'Your preferred code editor')
       .choices(['vscode'])
@@ -101,13 +97,16 @@ export const create = new Command('create')
     const BIGCOMMERCE_IAM_URL = process.env.BIGCOMMRECE_IAM_URL ?? 'https://login.bigcommerce.com';
 
     const ghRef = options.ghRef ?? (await getLatestCoreTag());
+    const packageManager = z
+      .union([z.literal('npm'), z.literal('yarn'), z.literal('pnpm')])
+      .parse(options.packageManager);
 
     const { projectName, projectDir } = await getProjectDirectory({
       projectDir: options.projectDir,
       projectName: options.projectName,
     });
 
-    const { packageManager, codeEditor, includeFunctionalTests } = options;
+    const { codeEditor, includeFunctionalTests } = options;
 
     let storeHash = options.storeHash;
     let accessToken = options.accessToken;
