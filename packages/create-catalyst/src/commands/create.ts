@@ -99,14 +99,9 @@ export const create = new Command('create')
       projectName: options.projectName,
     });
 
-    let storeHash = options.storeHash;
-    let accessToken = options.accessToken;
-    let channelId;
-    let customerImpersonationToken = options.customerImpersonationToken;
+    let { storeHash, accessToken, customerImpersonationToken } = options;
 
-    if (options.channelId) {
-      channelId = parseInt(options.channelId, 10);
-    }
+    let channelId = options.channelId ? parseInt(options.channelId, 10) : undefined;
 
     if (!options.storeHash || !options.accessToken) {
       const credentials = await login(BIGCOMMERCE_IAM_URL);
