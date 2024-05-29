@@ -1,9 +1,93 @@
+import { removeEdgesAndNodes } from '@bigcommerce/catalyst-client';
 import { cache } from 'react';
 
 import { getSessionCustomerId } from '~/auth';
 import { client } from '~/client';
 import { FORM_FIELDS_FRAGMENT } from '~/client/fragments/form-fields';
 import { graphql, VariablesOf } from '~/client/graphql';
+import { PricingFragment } from '~/components/pricing';
+
+import { GalleryFragment } from '../../product/[slug]/_components/gallery/fragment';
+
+const WishlistQuery = graphql(
+  `
+    query WishlistQuery(
+      $filters: WishlistFiltersInput
+      $after: String
+      $before: String
+      $first: Int
+      $last: Int
+    ) {
+      customer {
+        wishlists(filters: $filters, after: $after, before: $before, first: $first, last: $last) {
+          pageInfo {
+            hasNextPage
+            hasPreviousPage
+            startCursor
+            endCursor
+          }
+          edges {
+            node {
+              entityId
+              name
+              isPublic
+              items {
+                edges {
+                  node {
+                    entityId
+                    product {
+                      entityId
+                      name
+                      path
+                      brand {
+                        name
+                        path
+                      }
+                      ...GalleryFragment
+                      ...PricingFragment
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  `,
+  [GalleryFragment, PricingFragment],
+);
+
+export const getWishlistQuery = cache(async () => {
+  const customerId = await getSessionCustomerId();
+
+  const response = await client.fetch({
+    document: WishlistQuery,
+    fetchOptions: { cache: 'no-store' },
+    customerId,
+  });
+
+  const { customer } = response.data;
+
+  if (!customer) {
+    return undefined;
+  }
+
+  return removeEdgesAndNodes(customer.wishlists).map((wishlist) => {
+    return {
+      ...wishlist,
+      items: removeEdgesAndNodes(wishlist.items).map((item) => {
+        return {
+          ...item,
+          product: {
+            ...item.product,
+            images: removeEdgesAndNodes(item.product.images),
+          },
+        };
+      }),
+    };
+  });
+});
 
 const CustomerSettingsQuery = graphql(
   `
