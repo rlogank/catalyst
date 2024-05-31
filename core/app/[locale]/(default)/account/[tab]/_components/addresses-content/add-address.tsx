@@ -8,6 +8,7 @@ import ReCaptcha from 'react-google-recaptcha';
 
 import {
   createFieldName,
+  DateField,
   FieldNameToFieldId,
   FieldWrapper,
   NumbersOnly,
@@ -183,6 +184,14 @@ export const AddAddress = ({
                       name={createFieldName(field, 'address')}
                       onChange={handleNumbersInputValidation}
                     />
+                  </FieldWrapper>
+                );
+              }
+
+              case 'DateFormField': {
+                return (
+                  <FieldWrapper fieldId={field.entityId} key={field.entityId}>
+                    <DateField field={field} name={createFieldName(field, 'address')} />
                   </FieldWrapper>
                 );
               }

@@ -1,11 +1,28 @@
+import { UpdateCustomerAddressInput } from '~/client/mutations/update-customer-address';
+
+type FormFieldsType = UpdateCustomerAddressInput['data']['formFields'];
+type CustomFormField = keyof NonNullable<FormFieldsType>;
+type CustomFieldValueType = NonNullable<NonNullable<FormFieldsType>[CustomFormField]>[number];
+type ReturnedFormData = Record<string, unknown>;
+
+const updateFormFields = (
+  formFields: FormFieldsType,
+  fieldType: CustomFormField,
+  fieldData: CustomFieldValueType,
+) => {
+  const customFormFields = formFields ?? {};
+
+  if (customFormFields[fieldType]) {
+    customFormFields[fieldType]?.push(fieldData);
+  } else {
+    customFormFields[fieldType] = [fieldData];
+  }
+
+  return customFormFields;
+};
+
 export const parseAccountFormData = (accountFormData: FormData): unknown =>
-  [...accountFormData.entries()].reduce<
-    Record<
-      string,
-      | FormDataEntryValue
-      | Record<string, Array<Record<string, string | number | number[] | FormDataEntryValue>>>
-    >
-  >((parsedData, [name, value]) => {
+  [...accountFormData.entries()].reduce<ReturnedFormData>((parsedData, [name, value]) => {
     const key = name.split('-').at(-1) ?? '';
     const sections = name.split('-').slice(0, -1);
 
@@ -27,63 +44,65 @@ export const parseAccountFormData = (accountFormData: FormData): unknown =>
 
       switch (customFieldType) {
         case 'checkboxes': {
-          parsedData.formFields = {
-            [customFieldType]: [
-              {
-                fieldEntityId: Number(key),
-                fieldValueEntityIds: [Number(value)],
-              },
-            ],
-          };
+          parsedData.formFields = updateFormFields(parsedData.formFields ?? null, customFieldType, {
+            fieldEntityId: Number(key),
+            fieldValueEntityIds: [Number(value)],
+          });
+
           break;
         }
 
         case 'multipleChoices': {
-          parsedData.formFields = {
-            [customFieldType]: [
-              {
-                fieldEntityId: Number(key),
-                fieldValueEntityId: Number(value),
-              },
-            ],
-          };
+          parsedData.formFields = updateFormFields(parsedData.formFields ?? null, customFieldType, {
+            fieldEntityId: Number(key),
+            fieldValueEntityId: Number(value),
+          });
+
           break;
         }
 
         case 'numbers': {
-          parsedData.formFields = {
-            [customFieldType]: [
-              {
-                fieldEntityId: Number(key),
-                [customFieldType.slice(0, -1)]: Number(value),
-              },
-            ],
-          };
+          parsedData.formFields = updateFormFields(parsedData.formFields ?? null, customFieldType, {
+            fieldEntityId: Number(key),
+            number: Number(value),
+          });
+
           break;
         }
 
         case 'dates': {
-          parsedData.formFields = {
-            [customFieldType]: [
-              {
-                fieldEntityId: Number(key),
-                [customFieldType.slice(0, -1)]: value, // value.toISOString(),
-              },
-            ],
-          };
+          if (typeof value !== 'string') {
+            break;
+          }
+
+          const [day, mm, year] = value.split('/');
+
+          const month = Number(mm) - 1;
+          const date = new Date(Date.UTC(Number(year), month, Number(day))).toISOString();
+
+          parsedData.formFields = updateFormFields(parsedData.formFields ?? null, customFieldType, {
+            fieldEntityId: Number(key),
+            date,
+          });
+
           break;
         }
 
-        // texts || passwords
-        default: {
-          parsedData.formFields = {
-            [customFieldType]: [
-              {
-                fieldEntityId: Number(key),
-                [customFieldType.slice(0, -1)]: String(value),
-              },
-            ],
-          };
+        case 'texts': {
+          parsedData.formFields = updateFormFields(parsedData.formFields ?? null, customFieldType, {
+            fieldEntityId: Number(key),
+            text: String(value),
+          });
+
+          break;
+        }
+
+        case 'passwords': {
+          parsedData.formFields = updateFormFields(parsedData.formFields ?? null, customFieldType, {
+            fieldEntityId: Number(key),
+            password: String(value),
+          });
+
           break;
         }
       }

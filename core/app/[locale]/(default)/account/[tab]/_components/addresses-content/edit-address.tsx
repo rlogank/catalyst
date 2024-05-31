@@ -8,6 +8,7 @@ import ReCaptcha from 'react-google-recaptcha';
 
 import {
   createFieldName,
+  DateField,
   FieldNameToFieldId,
   FieldWrapper,
   NumbersOnly,
@@ -233,6 +234,25 @@ export const EditAddress = ({
                       isValid={numbersInputValid[fieldId]}
                       name={createFieldName(field, 'address')}
                       onChange={handleNumbersInputValidation}
+                    />
+                  </FieldWrapper>
+                );
+              }
+
+              case 'DateFormField': {
+                const defaultDate =
+                  defaultCustomField?.__typename === `DateFormFieldValue`
+                    ? defaultCustomField.date.utc
+                    : undefined;
+
+                return (
+                  <FieldWrapper fieldId={fieldId} key={fieldId}>
+                    <DateField
+                      defaultValue={defaultDate}
+                      field={field}
+                      // isValid={true}
+                      name={createFieldName(field, 'address')}
+                      // onSelect={handleDateChange}
                     />
                   </FieldWrapper>
                 );
