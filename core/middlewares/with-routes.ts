@@ -15,6 +15,8 @@ import { kv } from '../lib/kv';
 
 import { type MiddlewareFactory } from './compose-middlewares';
 
+import { reservedRoutes } from '~/lib/reservedRoutes';
+
 type Route = Awaited<ReturnType<typeof getRoute>>;
 type StorefrontStatusType = ReturnType<typeof graphql.scalar<'StorefrontStatusType'>>;
 
@@ -115,6 +117,25 @@ const clearLocaleFromPath = (path: string) => {
 const getRouteInfo = async (request: NextRequest, event: NextFetchEvent) => {
   try {
     const pathname = clearLocaleFromPath(request.nextUrl.pathname);
+
+    const routeIsReserved = reservedRoutes
+      .filter(route => route.type !== 'home')
+      .some((route) => route.route.startsWith(pathname));
+
+    if (routeIsReserved) {
+      let keys = [STORE_STATUS_KEY];
+
+      let [statusCache] = await kv.mget<RouteCache | StorefrontStatusCache>(
+        STORE_STATUS_KEY,
+      );
+
+      return {
+        route: { node: null, redirect: null },
+        status: statusCache?.status
+      };
+    }
+
+    let keys = [routeCacheKvKey(pathname), STORE_STATUS_KEY];
 
     let [routeCache, statusCache] = await kv.mget<RouteCache | StorefrontStatusCache>(
       routeCacheKvKey(pathname),

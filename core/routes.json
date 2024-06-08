@@ -1,0 +1,27 @@
+[
+    {
+        "type": "home",
+        "matching": "*",
+        "route": "/"
+    },
+    {
+        "type": "cart",
+        "matching": "*",
+        "route": "/cart/"
+    },
+    {
+        "type": "login",
+        "matching": "*",
+        "route": "/login/"
+    },
+    {
+        "type": "search",
+        "matching": "*",
+        "route": "/search/"
+    },
+    {
+        "type": "account",
+        "matching": "*",
+        "route": "/account/"
+    }
+]
