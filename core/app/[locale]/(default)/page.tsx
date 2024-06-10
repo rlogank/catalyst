@@ -43,6 +43,21 @@ const HomePageQuery = graphql(
   [ProductCardCarouselFragment],
 );
 
+const CarouselQuery = graphql(
+  `
+    query CarouselMetafieldQuery {
+      carousel: channel {
+        metafields(namespace: "sample-data", keys: "carousel-json") {
+          edges {
+            node {
+              value
+            }
+          }
+        }
+      }
+    }
+  `);
+
 export default async function Home({ params: { locale } }: Props) {
   const customerId = await getSessionCustomerId();
 
@@ -57,12 +72,20 @@ export default async function Home({ params: { locale } }: Props) {
     fetchOptions: customerId ? { cache: 'no-store' } : { next: { revalidate } },
   });
 
+  const { data: carouselData } = await client.fetch({
+    document: CarouselQuery,
+    fetchOptions: { next: { revalidate } },
+  });
+
+
+  const carousel = !!carouselData.carousel?.metafields.edges.length ? JSON.parse(carouselData.carousel.metafields.edges[0].node.value) : null;
+  
   const featuredProducts = removeEdgesAndNodes(data.site.featuredProducts);
   const newestProducts = removeEdgesAndNodes(data.site.newestProducts);
 
   return (
     <>
-      <Hero />
+      <Hero slides={carousel.slides}/>
 
       <div className="my-10">
         <NextIntlClientProvider locale={locale} messages={{ Product: messages.Product ?? {} }}>
