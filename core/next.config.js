@@ -3,7 +3,9 @@ const createNextIntlPlugin = require('next-intl/plugin');
 
 const withNextIntl = createNextIntlPlugin();
 
-const cspHeader = `
+const cspHeader =
+  process.env.CSP_HEADER ||
+  `
   base-uri 'self';
   form-action 'self';
   frame-ancestors 'none';
