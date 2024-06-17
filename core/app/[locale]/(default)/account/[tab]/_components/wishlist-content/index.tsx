@@ -1,5 +1,3 @@
-import { getLocale, getTranslations } from 'next-intl/server';
-
 interface Props {
   wishlists: Wishlists;
 }
@@ -16,14 +14,11 @@ export interface FormStatus {
   message: string;
 }
 
-export const WishlistContent = async ({ wishlists }: Props) => {
-  const locale = await getLocale();
-  const t = await getTranslations({ locale, namespace: 'Account.Wishlist' });
-
+export const WishlistContent = ({ wishlists }: Props) => {
   return (
-    <div>
+    <>
       <TabHeading heading="wishlists" />
-      {wishlists.length === 0 ? <p>{t('noItems')}</p> : <WishlistBook wishlists={wishlists} />}
-    </div>
+      <WishlistBook wishlists={wishlists} />
+    </>
   );
 };
