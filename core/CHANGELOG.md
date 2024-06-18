@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.9.1
+
+### Patch Changes
+
+- [#937](https://github.com/bigcommerce/catalyst/pull/937) [`3606639`](https://github.com/bigcommerce/catalyst/commit/3606639e294465cd10aab217c8c74be7cd7a8754) Thanks [@jorgemoya](https://github.com/jorgemoya)! - Show correct status and messaging for the Add to Cart button.
+
+- [#972](https://github.com/bigcommerce/catalyst/pull/972) [`3c34e27`](https://github.com/bigcommerce/catalyst/commit/3c34e276d7b735394aa3c9d6205f18b5407ca7a4) Thanks [@jorgemoya](https://github.com/jorgemoya)! - Show correct color of remove button when in loading state.
+
+- [#982](https://github.com/bigcommerce/catalyst/pull/982) [`b8ea900`](https://github.com/bigcommerce/catalyst/commit/b8ea9006a621a9d5f549e4fa1c6bbccb72c3b1ec) Thanks [@matthewvolk](https://github.com/matthewvolk)! - Introduces more consistent naming convention for files related to GraphQL, changes opinions around when it is appropriate to track GraphQL files in version control, fixes an issue where the `generate.cjs` script was swallowing helpful error messaging
+
+- [#977](https://github.com/bigcommerce/catalyst/pull/977) [`bf4739d`](https://github.com/bigcommerce/catalyst/commit/bf4739d0977deb69f3bc1cf0e70f4c96b60c6d89) Thanks [@jorgemoya](https://github.com/jorgemoya)! - Add upstash kv adapter.
+
+- [#974](https://github.com/bigcommerce/catalyst/pull/974) [`970651c`](https://github.com/bigcommerce/catalyst/commit/970651c159553983f665a8951419cdd3d977fc02) Thanks [@jorgemoya](https://github.com/jorgemoya)! - Add loading state to remove coupon code button.
+
 ## 0.9.0
 
 ### Minor Changes
