@@ -26,6 +26,57 @@ interface WishlistBook {
   wishlists: Wishlists;
 }
 
+interface WishlistItems {
+  itemsLength: number;
+}
+
+enum VisibleWishlistItemsPerDevice {
+  sm = 1,
+  md = 3,
+  lg = 4,
+  xl = 6,
+}
+
+const QuantityDisplay = ({ itemsLength }: WishlistItems) => {
+  const smItems = itemsLength - VisibleWishlistItemsPerDevice.sm;
+  const mdItems = itemsLength - VisibleWishlistItemsPerDevice.md;
+  const lgItems = itemsLength - VisibleWishlistItemsPerDevice.lg;
+  const xlItems = itemsLength - VisibleWishlistItemsPerDevice.xl;
+
+  return (
+    <>
+      {smItems > 0 && (
+        <div className="list-item w-40 md:!hidden">
+          <div className="flex h-40 w-full items-center justify-center bg-gray-200 font-semibold text-gray-500">
+            +{smItems}
+          </div>
+        </div>
+      )}
+      {mdItems > 0 && (
+        <div className="hidden w-36 w-36 md:list-item lg:hidden">
+          <div className="flex h-36 w-full items-center justify-center bg-gray-200 font-semibold text-gray-500">
+            +{mdItems}
+          </div>
+        </div>
+      )}
+      {lgItems > 0 && (
+        <div className="hidden w-36 lg:list-item xl:hidden">
+          <div className="flex h-36 w-full items-center justify-center bg-gray-200 font-semibold text-gray-500 md:h-36">
+            +{lgItems}
+          </div>
+        </div>
+      )}
+      {xlItems > 0 && (
+        <div className="hidden w-36 xl:list-item">
+          <div className="flex h-36 w-full items-center justify-center bg-gray-200 font-semibold text-gray-500 md:h-36">
+            +{xlItems}
+          </div>
+        </div>
+      )}
+    </>
+  );
+};
+
 const Wishlist = ({ onDeleteWishlist, wishlist: { items, entityId, name } }: Wishlist) => {
   const t = useTranslations('Account.Wishlist');
 
@@ -36,41 +87,51 @@ const Wishlist = ({ onDeleteWishlist, wishlist: { items, entityId, name } }: Wis
         {items.length === 0 ? (
           <p className="flex-1 py-4 text-center">{t('noItems')}</p>
         ) : (
-          <ul className="mb-4 me-12 flex gap-4">
-            {items.map(({ entityId: productId, product }) => {
-              const defaultImage = product.images.find(({ isDefault }) => isDefault);
+          <div className="mb-4 flex gap-4 lg:me-12">
+            <ul
+              className="flex gap-4 [&>*:nth-child(n+2)]:hidden 
+                md:[&>*:nth-child(n+2)]:list-item md:[&>*:nth-child(n+4)]:hidden 
+                lg:[&>*:nth-child(n+4)]:list-item lg:[&>*:nth-child(n+5)]:hidden
+                xl:[&>*:nth-child(n+5)]:list-item lg:[&>*:nth-child(n+7)]:hidden"
+            >
+              {items
+                .slice(0, VisibleWishlistItemsPerDevice.xl)
+                .map(({ entityId: productId, product }) => {
+                  const defaultImage = product.images.find(({ isDefault }) => isDefault);
 
-              return (
-                <li className="w-40 md:w-36" key={productId}>
-                  <Link className="mb-2 flex" href={product.path}>
-                    <div className="h-40 w-full md:h-36">
-                      {defaultImage ? (
-                        <BcImage
-                          alt={defaultImage.altText}
-                          className="object-contain"
-                          height={300}
-                          src={defaultImage.url}
-                          width={300}
-                        />
-                      ) : (
-                        <div className="h-full w-full bg-gray-200" />
+                  return (
+                    <li className="w-40 md:w-36" key={productId}>
+                      <Link className="mb-2 flex" href={product.path}>
+                        <div className="h-40 w-full md:h-36">
+                          {defaultImage ? (
+                            <BcImage
+                              alt={defaultImage.altText}
+                              className="object-contain"
+                              height={300}
+                              src={defaultImage.url}
+                              width={300}
+                            />
+                          ) : (
+                            <div className="h-full w-full bg-gray-200" />
+                          )}
+                        </div>
+                      </Link>
+
+                      {product.brand && (
+                        <Link href={product.brand.path}>
+                          <p className="text-gray-500">{product.brand.name}</p>
+                        </Link>
                       )}
-                    </div>
-                  </Link>
-
-                  {product.brand && (
-                    <Link href={product.brand.path}>
-                      <p className="text-gray-500">{product.brand.name}</p>
-                    </Link>
-                  )}
-                  <Link href={product.path}>
-                    <h4 className="mb-2 font-semibold">{product.name}</h4>
-                  </Link>
-                  <Pricing data={product} />
-                </li>
-              );
-            })}
-          </ul>
+                      <Link href={product.path}>
+                        <h4 className="mb-2 font-semibold">{product.name}</h4>
+                      </Link>
+                      <Pricing data={product} />
+                    </li>
+                  );
+                })}
+            </ul>
+            <QuantityDisplay itemsLength={items.length} />
+          </div>
         )}
         {onDeleteWishlist && (
           <div>
