@@ -5,6 +5,7 @@ import chalk from 'chalk';
 
 import PACKAGE_INFO from '../package.json';
 
+import { copy } from './commands/copy';
 import { create } from './commands/create';
 import { init } from './commands/init';
 
@@ -15,6 +16,7 @@ program
   .version(PACKAGE_INFO.version)
   .description('A command line tool to create a new Catalyst project.')
   .addCommand(create, { isDefault: true })
-  .addCommand(init);
+  .addCommand(init)
+  .addCommand(copy);
 
 program.parse(process.argv);
